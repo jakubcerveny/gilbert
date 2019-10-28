@@ -61,7 +61,7 @@ Very flat is OK too (20x12x2):
 ### Odd Sizes
 
 In 2D, if the larger dimension is odd and the smaller is even, a single diagonal
-step cannot be avoided:
+step cannot be avoided (15x12):
 
 ![](https://raw.githubusercontent.com/jakubcerveny/gilbert/master/img/15x12.png)
 
