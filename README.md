@@ -61,11 +61,11 @@ Very flat is OK too (20x12x2):
 ### Odd Sizes
 
 In 2D, if the larger dimension is odd and the smaller is even, a single diagonal
-step needs to be inserted:
+step cannot be avoided:
 
 ![](https://raw.githubusercontent.com/jakubcerveny/gilbert/master/img/15x12.png)
 
-In 3D this is much worse, so odd dimensions should be avoided altogether (7x6x4):
+In 3D this is much worse, so odd dimensions should not be used (7x6x4):
 
 ![](https://raw.githubusercontent.com/jakubcerveny/gilbert/master/img/7x6x4.png)
 
@@ -73,16 +73,14 @@ In 3D this is much worse, so odd dimensions should be avoided altogether (7x6x4)
 ### Visualizing the Results
 
 A simple Octave script is included to help visualize the coordinates produced by
-`gilbert2d` and `gilbert3d`. The above figures were obtained with this command
-line:
+`gilbert2d` and `gilbert3d`. The above figures were obtained with
 
 ```
 ./gilbert2d 100 63 | octave --eval 'waitfor(plotpath(dlmread(stdin())));'
 ```
 
 
-
 ---
 
-TODO
+Author: Jakub Červený. This code is released under the 2-clause BSD license.
 
