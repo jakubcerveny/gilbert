@@ -13,7 +13,7 @@ domains whose sides are powers of two.
 We present a simple recursive algorithm that generalizes the Hilbert curve
 to rectangles of arbitrary sizes in 2D, and cuboids of even sizes in 3D.
 
-![55x31](https://raw.githubusercontent.com/jakubcerveny/gilbert/master/img/55x31.png)
+![](https://raw.githubusercontent.com/jakubcerveny/gilbert/master/img/55x31.png)
 
 
 ### Previous Work
@@ -34,14 +34,55 @@ are a bit uneven.
 
 ### Our Algorithm
 
+The idea is to recursively apply the following template to obtain a Hilbert-like
+curve. The trick is to avoid odd sizes when halving the dimensions (a/2, b/2).
+The horizontal dimension of the template on the left should be even, if possible.
 
-![algorithm](https://raw.githubusercontent.com/jakubcerveny/gilbert/master/img/algorithm.svg?sanitize=true)
+![](https://raw.githubusercontent.com/jakubcerveny/gilbert/master/img/algorithm.svg?sanitize=true)
 
+Running `gilbert2d` with two arguments (width, height) produces a space-filling
+curve with orthogonal steps only, as long as the width is even (100x63 shown):
+
+![](https://raw.githubusercontent.com/jakubcerveny/gilbert/master/img/100x63.png)
+
+The algorithm extends naturally to 3D (8x6x4):
+
+![](https://raw.githubusercontent.com/jakubcerveny/gilbert/master/img/8x6x4.png)
+
+40x30x20:
+
+![](https://raw.githubusercontent.com/jakubcerveny/gilbert/master/img/40x30x20.png)
+
+Very flat is OK too (20x12x2):
+
+![](https://raw.githubusercontent.com/jakubcerveny/gilbert/master/img/20x12x2.png)
+
+
+### Odd Sizes
+
+In 2D, if the larger dimension is odd and the smaller is even, a single diagonal
+step needs to be inserted:
+
+![](https://raw.githubusercontent.com/jakubcerveny/gilbert/master/img/15x12.png)
+
+In 3D this is much worse, so odd dimensions should be avoided altogether (7x6x4):
+
+![](https://raw.githubusercontent.com/jakubcerveny/gilbert/master/img/7x6x4.png)
+
+
+### Visualizing the Results
+
+A simple Octave script is included to help visualize the coordinates produced by
+`gilbert2d` and `gilbert3d`. The above figures were obtained with this command
+line:
 
 ```
-./gilbert2d 15 12 | octave --eval 'waitfor(plotpath(dlmread(stdin())));'
+./gilbert2d 100 63 | octave --eval 'waitfor(plotpath(dlmread(stdin())));'
 ```
 
+
+
+---
 
 TODO
 
