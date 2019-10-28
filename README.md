@@ -72,8 +72,9 @@ In 3D this is much worse, so odd dimensions should not be used (7x6x4):
 
 ### Visualizing the Results
 
-A simple Octave script is included to help visualize the coordinates produced by
-`gilbert2d` and `gilbert3d`. The above figures were obtained with
+A simple Octave script (`plotpath.m`) is included to help visualize the
+coordinates produced by `gilbert2d` and `gilbert3d`. The above figures were
+obtained with
 
 ```
 ./gilbert2d 100 63 | octave --eval 'waitfor(plotpath(dlmread(stdin())));'
