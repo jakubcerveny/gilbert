@@ -13,7 +13,7 @@ domains whose sides are powers of two.
 We present a simple recursive algorithm that generalizes the Hilbert curve
 to rectangles of arbitrary sizes in 2D, and cuboids of even sizes in 3D.
 
-![55x31](https://raw.githubusercontent.com/jakubcerveny/gilbert/img/55x31.png)
+![55x31](https://raw.githubusercontent.com/jakubcerveny/gilbert/master/img/55x31.png)
 
 
 ### Previous Work
