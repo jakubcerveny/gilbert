@@ -35,7 +35,7 @@ are a bit uneven.
 ### Our Algorithm
 
 
-![algorithm](https://raw.githubusercontent.com/jakubcerveny/gilbert/master/img/algorithm.svg)
+![algorithm](https://raw.githubusercontent.com/jakubcerveny/gilbert/master/img/algorithm.svg?sanitize=true)
 
 
 ```
