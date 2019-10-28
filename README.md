@@ -2,8 +2,8 @@
 
 # gilbert
 
-Generalized Hilbert ("gilbert") discrete space-filling curve for rectangular
-domains of arbitrary (non-power of two) sizes.
+Generalized Hilbert ("gilbert") space-filling curve for rectangular domains of
+arbitrary (non-power of two) sizes.
 
 The discrete [Hilbert curve](https://en.wikipedia.org/wiki/Hilbert_curve) is a
 widely used space-filling curve to map between N-dimensional and 1-D spaces
@@ -34,6 +34,8 @@ are a bit uneven.
 
 ### Our Algorithm
 
+
+![algorithm](https://raw.githubusercontent.com/jakubcerveny/gilbert/master/img/algorithm.svg)
 
 
 ```
