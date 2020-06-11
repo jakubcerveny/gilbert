@@ -102,5 +102,5 @@ obtained with
 
 ---
 
-Author: Jakub Červený. This code is released under the 2-clause BSD license.
+Author: Jakub Červený. This [code](https://github.com/jakubcerveny/gilbert) is released under the 2-clause BSD license.
 
