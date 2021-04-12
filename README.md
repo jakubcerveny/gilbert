@@ -96,7 +96,7 @@ coordinates produced by `gilbert2d` and `gilbert3d`. The above figures were
 obtained with
 
 ```
-./gilbert2d 100 63 | octave --eval 'waitfor(plotpath(dlmread(stdin())));'
+./gilbert2d.py 100 63 | octave --eval 'waitfor(plotpath(dlmread(stdin())));'
 ```
 
 

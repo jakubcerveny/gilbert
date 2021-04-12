@@ -1,9 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import sys
 
 def sgn(x):
-    return (x > 0) - (x < 0)
+    return -1 if x < 0 else (1 if x > 0 else 0)
 
 
 def gilbert2d(x, y, ax, ay, bx, by):
@@ -21,19 +21,19 @@ def gilbert2d(x, y, ax, ay, bx, by):
     if h == 1:
         # trivial row fill
         for i in range(0, w):
-            print x, y
+            print(x, y)
             (x, y) = (x + dax, y + day)
         return
 
     if w == 1:
         # trivial column fill
         for i in range(0, h):
-            print x, y
+            print(x, y)
             (x, y) = (x + dbx, y + dby)
         return
 
-    (ax2, ay2) = (ax/2, ay/2)
-    (bx2, by2) = (bx/2, by/2)
+    (ax2, ay2) = (ax//2, ay//2)
+    (bx2, by2) = (bx//2, by//2)
 
     w2 = abs(ax2 + ay2)
     h2 = abs(bx2 + by2)

@@ -1,9 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import sys
 
 def sgn(x):
-    return (x > 0) - (x < 0)
+    return -1 if x < 0 else (1 if x > 0 else 0)
 
 
 def gilbert3d(x, y, z,
@@ -26,25 +26,25 @@ def gilbert3d(x, y, z,
     # trivial row/column fills
     if h == 1 and d == 1:
         for i in range(0, w):
-            print x, y, z
+            print(x, y, z)
             (x, y, z) = (x + dax, y + day, z + daz)
         return
 
     if w == 1 and d == 1:
         for i in range(0, h):
-            print x, y, z
+            print(x, y, z)
             (x, y, z) = (x + dbx, y + dby, z + dbz)
         return
 
     if w == 1 and h == 1:
         for i in range(0, d):
-            print x, y, z
+            print(x, y, z)
             (x, y, z) = (x + dcx, y + dcy, z + dcz)
         return
 
-    (ax2, ay2, az2) = (ax/2, ay/2, az/2)
-    (bx2, by2, bz2) = (bx/2, by/2, bz/2)
-    (cx2, cy2, cz2) = (cx/2, cy/2, cz/2)
+    (ax2, ay2, az2) = (ax//2, ay//2, az//2)
+    (bx2, by2, bz2) = (bx//2, by//2, bz//2)
+    (cx2, cy2, cz2) = (cx//2, cy//2, cz//2)
 
     w2 = abs(ax2 + ay2 + az2)
     h2 = abs(bx2 + by2 + bz2)
