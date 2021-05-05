@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
 
-import sys
-
 def sgn(x):
     return -1 if x < 0 else (1 if x > 0 else 0)
 
 
-def gilbert2d(x, y, ax, ay, bx, by):
+def _gilbert2d(x, y, ax, ay, bx, by):
     """
     Generalized Hilbert ('gilbert') space-filling curve for arbitrary-sized
     2D rectangular grids.
@@ -21,14 +19,14 @@ def gilbert2d(x, y, ax, ay, bx, by):
     if h == 1:
         # trivial row fill
         for i in range(0, w):
-            print(x, y)
+            yield(x, y)
             (x, y) = (x + dax, y + day)
         return
 
     if w == 1:
         # trivial column fill
         for i in range(0, h):
-            print(x, y)
+            yield(x, y)
             (x, y) = (x + dbx, y + dby)
         return
 
@@ -44,8 +42,8 @@ def gilbert2d(x, y, ax, ay, bx, by):
             (ax2, ay2) = (ax2 + dax, ay2 + day)
 
         # long case: split in two parts only
-        gilbert2d(x, y, ax2, ay2, bx, by)
-        gilbert2d(x+ax2, y+ay2, ax-ax2, ay-ay2, bx, by)
+        yield from _gilbert2d(x, y, ax2, ay2, bx, by)
+        yield from _gilbert2d(x+ax2, y+ay2, ax-ax2, ay-ay2, bx, by)
 
     else:
         if (h2 % 2) and (h > 2):
@@ -53,21 +51,30 @@ def gilbert2d(x, y, ax, ay, bx, by):
             (bx2, by2) = (bx2 + dbx, by2 + dby)
 
         # standard case: one step up, one long horizontal, one step down
-        gilbert2d(x, y, bx2, by2, ax2, ay2)
-        gilbert2d(x+bx2, y+by2, ax, ay, bx-bx2, by-by2)
-        gilbert2d(x+(ax-dax)+(bx2-dbx), y+(ay-day)+(by2-dby),
+        yield from _gilbert2d(x, y, bx2, by2, ax2, ay2)
+        yield from _gilbert2d(x+bx2, y+by2, ax, ay, bx-bx2, by-by2)
+        yield from _gilbert2d(x+(ax-dax)+(bx2-dbx), y+(ay-day)+(by2-dby),
                  -bx2, -by2, -(ax-ax2), -(ay-ay2))
 
 
-def main():
-    width = int(sys.argv[1])
-    height = int(sys.argv[2])
+def gilbert2d(width, height):
 
     if width >= height:
-        gilbert2d(0, 0, width, 0, 0, height)
+        yield from _gilbert2d(0, 0, width, 0, 0, height)
     else:
-        gilbert2d(0, 0, 0, height, width, 0)
+        yield from _gilbert2d(0, 0, 0, height, width, 0)
 
 
 if __name__ == "__main__":
-    main()
+
+    import argparse
+
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('width', type=int)
+    parser.add_argument('height', type=int)
+
+    args = parser.parse_args()
+
+    for x, y in gilbert2d(args.width, args.height):
+        print(x, y)
