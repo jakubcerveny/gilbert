@@ -1,14 +1,26 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: BSD-2-Clause
+# Copyright (c) 2018 Jakub Červený
+
+
+def gilbert2d(width, height):
+    """
+    Generalized Hilbert ('gilbert') space-filling curve for arbitrary-sized
+    2D rectangular grids. Generates discrete 2D coordinates to fill a rectangle
+    of size (width x height).
+    """
+
+    if width >= height:
+        yield from generate2d(0, 0, width, 0, 0, height)
+    else:
+        yield from generate2d(0, 0, 0, height, width, 0)
+
 
 def sgn(x):
     return -1 if x < 0 else (1 if x > 0 else 0)
 
 
-def _gilbert2d(x, y, ax, ay, bx, by):
-    """
-    Generalized Hilbert ('gilbert') space-filling curve for arbitrary-sized
-    2D rectangular grids.
-    """
+def generate2d(x, y, ax, ay, bx, by):
 
     w = abs(ax + ay)
     h = abs(bx + by)
@@ -42,8 +54,8 @@ def _gilbert2d(x, y, ax, ay, bx, by):
             (ax2, ay2) = (ax2 + dax, ay2 + day)
 
         # long case: split in two parts only
-        yield from _gilbert2d(x, y, ax2, ay2, bx, by)
-        yield from _gilbert2d(x+ax2, y+ay2, ax-ax2, ay-ay2, bx, by)
+        yield from generate2d(x, y, ax2, ay2, bx, by)
+        yield from generate2d(x+ax2, y+ay2, ax-ax2, ay-ay2, bx, by)
 
     else:
         if (h2 % 2) and (h > 2):
@@ -51,18 +63,10 @@ def _gilbert2d(x, y, ax, ay, bx, by):
             (bx2, by2) = (bx2 + dbx, by2 + dby)
 
         # standard case: one step up, one long horizontal, one step down
-        yield from _gilbert2d(x, y, bx2, by2, ax2, ay2)
-        yield from _gilbert2d(x+bx2, y+by2, ax, ay, bx-bx2, by-by2)
-        yield from _gilbert2d(x+(ax-dax)+(bx2-dbx), y+(ay-day)+(by2-dby),
-                 -bx2, -by2, -(ax-ax2), -(ay-ay2))
-
-
-def gilbert2d(width, height):
-
-    if width >= height:
-        yield from _gilbert2d(0, 0, width, 0, 0, height)
-    else:
-        yield from _gilbert2d(0, 0, 0, height, width, 0)
+        yield from generate2d(x, y, bx2, by2, ax2, ay2)
+        yield from generate2d(x+bx2, y+by2, ax, ay, bx-bx2, by-by2)
+        yield from generate2d(x+(ax-dax)+(bx2-dbx), y+(ay-day)+(by2-dby),
+                              -bx2, -by2, -(ax-ax2), -(ay-ay2))
 
 
 if __name__ == "__main__":
@@ -70,10 +74,8 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser()
-
     parser.add_argument('width', type=int)
     parser.add_argument('height', type=int)
-
     args = parser.parse_args()
 
     for x, y in gilbert2d(args.width, args.height):
