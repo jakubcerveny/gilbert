@@ -43,7 +43,7 @@ def inbounds(x,y, x_s,y_s, ax,ay, bx,by):
     dx = ax+bx
     dy = ay+by
 
-    if dx<0:
+    if (dx<0:
         if (x>x_s) or (x<=(x_s+dx)): return False
     else:
         if (x<x_s) or (x>=(x_s+dx)): return False
