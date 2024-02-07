@@ -1,4 +1,8 @@
+// SPDX-License-Identifier: BSD-2-Clause
+// Copyright (c) 2018 Jakub Červený
+
 "use strict";
+
 
 var gilbert = {
   "xy2d": gilbertxy2d,
@@ -572,6 +576,8 @@ if (typeof module !== "undefined") {
   module.exports["d2xyz"] = gilbertxyz2d;
   module.exports["xyz2d"] = gilbertd2xyz;
 
+  module.exports["main"] = _main;
+
   function _main(argv) {
 
     if (argv.length < 4) {
@@ -627,7 +633,7 @@ if (typeof module !== "undefined") {
 
   }
 
-  _main( process.argv.slice(1) );
+  //_main( process.argv.slice(1) );
 
 }
 
