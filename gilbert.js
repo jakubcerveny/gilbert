@@ -6,10 +6,10 @@
 
 var gilbert = {
   "xy2d": gilbertxy2d,
-  "2dxy": gilbertd2xy,
+  "d2xy": gilbertd2xy,
 
   "xyz2d": gilbertxyz2d,
-  "2dxyz": gilbertd2xyz,
+  "d2xyz": gilbertd2xyz,
 };
 
 function sgn(x) {
