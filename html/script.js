@@ -7,6 +7,7 @@ var info = {
   "default": { "w": 28, "h": 18 },
   "T": { "x": 10, "y": 10 },
   "S": { "x": 10, "y": 10 },
+  "color": "color",
   "two": null,
   "line": [],
   "two": null,
@@ -14,6 +15,13 @@ var info = {
   "container" : null,
   "canvas": null
 };
+
+function update_color() {
+  if (info.color == "color") { info.color = "bw"; }
+  else { info.color = "color"; }
+
+  draw_curve();
+}
 
 function update_wh(w,h) {
   let ui_width  = document.getElementById("ui_width");
@@ -122,10 +130,14 @@ function draw_curve() {
 
     info.line[idx-1].visible = true;
 
-    let hue = Math.floor(360*idx / (W*H)).toString();
-    let lit = '55%';
-    let crm = '0.35';
-    let clr = 'oklch(' + [ lit,crm,hue ].join(" ") + ')';
+    let clr = "#666";
+
+    if (info.color=="color") {
+      let hue = Math.floor(360*idx / (W*H)).toString();
+      let lit = '55%';
+      let crm = '0.35';
+      clr = 'oklch(' + [ lit,crm,hue ].join(" ") + ')';
+    }
 
     info.line[idx-1].stroke = clr;
   }
