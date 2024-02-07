@@ -1,4 +1,4 @@
-
+"use strict";
 
 function sgn(x) {
   if (x<0) { return -1; }
@@ -7,7 +7,7 @@ function sgn(x) {
 }
 
 function inbounds2(p, s, a, b) {
-  d = { "x":a.x+b.x, "y":a.y+b.y };
+  let d = { "x":a.x+b.x, "y":a.y+b.y };
 
   if (d.x < 0) {
     if ((p.x > s.x) || (p.x <= (s.x+d.x))) { return false; }
@@ -23,7 +23,7 @@ function inbounds2(p, s, a, b) {
 }
 
 function inbounds3(p, s, a, b, c) {
-  d = { "x":a.x+b.x+c.x, "y":a.y+b.y+c.y, "z":a.z+b.z+c.z };
+  let d = { "x":a.x+b.x+c.x, "y":a.y+b.y+c.y, "z":a.z+b.z+c.z };
 
   if (d.x < 0) {
     if ((p.x > s.x) || (p.x <= (s.x+d.x))) { return false; }
@@ -220,11 +220,213 @@ function gilbertxy2d_r(idx, q, p, a, b) {
 }
 
 
+function gilbertxyz2d_r(cur_idx, q, p, a, b, c) {
+  let _p = {}, _a = {}, _b = {}, _c = {};
+
+  let w = Math.abs(a.x+a.y+a.z);
+  let h = Math.abs(b.x+b.y+b.z);
+  let d = Math.abs(c.x+c.y+c.z);
+
+  let da = { "x": sgn(a.x), "y": sgn(a.y), "z": sgn(a.z) };
+  let db = { "x": sgn(b.x), "y": sgn(b.y), "z": sgn(b.z) };
+  let dc = { "x": sgn(c.x), "y": sgn(c.y), "z": sgn(c.z) };
+
+  // trivial row/column fills
+  if ((h==1) && (d==1)) {
+    return cur_idx + (da.x*(q.x-p.x)) + (da.y*(q.y-p.y)) + (da.z*(q.z-p.z));
+  }
+  else if ((w==1) && (d==1)) {
+    return cur_idx + (db.x*(q.x-p.x)) + (db.y*(q.y-p.y)) + (db.z*(q.z-p.z));
+  }
+  else if ((w==1) && (h==1)) {
+    return cur_idx + (dc.x*(q.x-p.x)) + (dc.y*(q.y-p.y)) + (dc.z*(q.z-p.z));
+  }
+
+  let a2 = { "x":Math.floor(a.x/2), "y":Math.floor(a.y/2), "z":Math.floor(a.z/2) };
+  let b2 = { "x":Math.floor(b.x/2), "y":Math.floor(b.y/2), "z":Math.floor(b.z/2) };
+  let c2 = { "x":Math.floor(c.x/2), "y":Math.floor(c.y/2), "z":Math.floor(c.z/2) };
+
+  let w2 = Math.abs(a2.x+a2.y+a2.z);
+  let h2 = Math.abs(b2.x+b2.y+b2.z);
+  let d2 = Math.abs(c2.x+c2.y+c2.z);
+
+  // prefer even steps
+  if ((w2%2) && (w>2)) {
+    a2.x += da.x;
+    a2.y += da.y;
+    a2.z += da.z;
+  }
+
+  if ((h2%2) && (h>2)) {
+    b2.x += db.x;
+    b2.y += db.y;
+    b2.z += db.z;
+  }
+
+  if ((d2%2) && (d>2)) {
+    c2.x += dc.x;
+    c2.y += dc.y;
+    c2.z += dc.z;
+  }
+
+  // wide case, split in w only
+  if ( ((2*w) > (3*h)) && ((2*w) > (3*d)) ) {
+    if (inbounds3(q,p,a2,b,c)) {
+      return gilbertxyz2d_r(cur_idx, q, p, a2, b, c);
+    }
+    cur_idx += Math.abs( (a2.x+a2.y+a2.z)*(b.x+b.y+b.z)*(c.x+c.y+c.z) );
+
+    _p = { "x":p.x+a2.x, "y":p.y+a2.y, "z":p.z+a2.z };
+    _a = { "x":a.x-a2.x, "y":a.y-a2.y, "z":a.z-a2.z };
+    return gilbertxyz2d_r(cur_idx, q, _p, _a, b, c);
+  }
+
+  else if ((3*h) > (4*d)) {
+
+    if (inbounds3(q,p,b2,c,a2)) {
+      return gilbertxyz2d_r(cur_idx,q,p,b2,c,a2);
+    }
+    cur_idx += Math.abs( (b2.x+b2.y+b2.z)*(c.x+c.y+c.z)*(a2.x+a2.y+a2.z) );
+
+    _p = { "x":p.x+b2.x, "y":p.y+b2.y, "z":p.z+b2.z };
+    _b = { "x":b.x-b2.x, "y":b.y-b2.y, "z":b.z-b2.z };
+    if (inbounds3(q,_p,a,_b,c)) {
+      return gilbertxyz2d_r(cur_idx,q, _p, a, _b, c);
+    }
+    cur_idx += Math.abs( (a.x+a.y+a.z)*((b.x-b2.x)+(b.y-b2.y)+(b.z-b2.z))*(c.x+c.y+c.z) );
+
+    _p = {
+      "x": p.x+(a.x-da.x)+(b2.x-db.x),
+      "y": p.y+(a.y-da.y)+(b2.y-db.y),
+      "z": p.z+(a.z-da.z)+(b2.z-db.z)
+    };
+    _a = { "x":-b2.x, "y":-b2.y, "z":-b2.z };
+    _c = { "x":-(a.x-a2.x), "y": -(a.y-a2.y), "z": -(a.z-a2.z) };
+    return gilbertxyz2d_r(cur_idx, q, _p, _a, c, _c);
+
+  }
+
+  else if ((3*d) > (4*h)) {
+
+    if (inbounds3(q,p,c2,a2,b)) {
+      return gilbertxyz2d_r(cur_idx,q,p,c2,a2,b);
+    }
+    cur_idx += Math.abs( (c2.x+c2.y+c2.z)*(a2.x+a2.y+a2.z)*(b.x+b.y+b.z) );
+
+    _p = { "x": p.x+c2.x, "y": p.y+c2.y, "z": p.z+c2.z };
+    _c = { "x": c.x-c2.x, "y": c.y-c2.y, "z": c.z-c2.z };
+    if (inbounds3(q, _p, a, b, _c)) {
+      return gilbertxyz2d_r(cur_idx, q, _p, a, b, _c);
+    }
+    cur_idx += Math.abs( (a.x+a.y+a.z)*(b.x+b.y+b.z)*((c.x-c2.x)+(c.y-c2.y)+(c.z-c2.z)) );
+
+    _p = {
+      "x": p.x+(a.x-da.x)+(c2.x-dc.x),
+      "y": p.y+(a.y-da.y)+(c2.y-dc.y),
+      "z": p.z+(a.z-da.z)+(c2.z-dc.z)
+    }
+    _a = { "x": -c2.x, "y": -c2.y, "z": -c2.z };
+    _b = { "x": -(a.x-a2.x), "y": -(a.y-a2.y), "z": -(a.z-a2.z) };
+    return gilbertxyz2d_r(cur_idx, q, _p, _a, _b, b);
+
+  }
+
+  // regular case, split in all w/h/d
+  if (inbounds3(q,p,b2,c2,a2)) {
+    return gilbertxyz2d_r(cur_idx,q,p,b2,c2,a2);
+  }
+  cur_idx += Math.abs( (b2.x+b2.y+b2.z)*(c2.x+c2.y+c2.z)*(a2.x+a2.y+a2.z) );
+
+  _p = { "x": p.x+b2.x, "y": p.y+b2.y, "z": p.z+b2.z };
+  _c = { "x": b.x-b2.x, "y": b.y-b2.y, "z": b.z-b2.z };
+  if (inbounds3(q, _p, c, a2, _c)) {
+    return gilbertxyz2d_r(cur_idx, q, _p, c, a2, _c);
+  }
+  cur_idx += Math.abs( (c.x+c.y+c.z)*(a2.x+a2.y+a2.z)*((b.x-b2.x)+(b.y-b2.y)+(b.z-b2.z)) );
+
+  _p = {
+    "x" : p.x+(b2.x-db.x)+(c.x-dc.x),
+    "y" : p.y+(b2.y-db.y)+(c.y-dc.y),
+    "z" : p.z+(b2.z-db.z)+(c.z-dc.z)
+  };
+  _b = { "x": -b2.x, "y": -b2.y, "z": -b2.z };
+  _c = { "x": -(c.x-c2.x), "y": -(c.y-c2.y), "z": -(c.z-c2.z) };
+  if (inbounds3(q, _p, a, _b, _c)) {
+    return gilbertxyz2d_r(cur_idx, q, _p, a, _b, _c);
+  }
+  cur_idx += Math.abs( (a.x+a.y+a.z)*(-b2.x-b2.y-b2.z)*(-(c.x-c2.x)-(c.y-c2.y)-(c.z-c2.z)) );
+
+  _p = {
+    "x": p.x+(a.x-da.x)+b2.x+(c.x-dc.x),
+    "y": p.y+(a.y-da.y)+b2.y+(c.y-dc.y),
+    "z": p.z+(a.z-da.z)+b2.z+(c.z-dc.z)
+  };
+  _a = { "x": -c.x, "y": -c.y, "z": -c.z };
+  _b = { "x": -(a.x-a2.x), "y": -(a.y-a2.y), "z": -(a.z-a2.z) };
+  _c = { "x": b.x-b2.x, "y": b.y-b2.y, "z": b.z-b2.z };
+  if (inbounds3(q, _p, _a, _b, _c)) {
+    return gilbertxyz2d_r(cur_idx, q, _p, _a, _b, _c);
+  }
+  cur_idx += Math.abs( (-c.x-c.y-c.z)*(-(a.x-a2.x)-(a.y-a2.y)-(a.z-a2.z))*((b.x-b2.x)+(b.y-b2.y)+(b.z-b2.z)) );
+
+  _p = {
+    "x": p.x+(a.x-da.x)+(b2.x-db.x),
+    "y": p.y+(a.y-da.y)+(b2.y-db.y),
+    "z": p.z+(a.z-da.z)+(b2.z-db.z)
+  };
+  _a = { "x": -b2.x, "y": -b2.y, "z": -b2.z };
+  _c = { "x": -(a.x-a2.x), "y": -(a.y-a2.y), "z": -(a.z-a2.z) };
+  return gilbertxyz2d_r(cur_idx, q, _p, _a, c2, _c);
+
+}
+
+
+function gilbertd2xyz_r(dst_idx, cur_idx, p, a, b, c) {
+}
 
 if (typeof module !== "undefined") {
 
   module.exports["d2xy"] = gilbertxy2d;
   module.exports["xy2d"] = gilbertd2xy;
+
+  module.exports["d2xyz"] = gilbertxyz2d;
+  module.exports["xyz2d"] = gilbertd2xyz;
+
+  if (process.argv.length < 5) {
+    console.log("provide args");
+    process.exit(-1);
+  }
+
+  let op = process.argv[2];
+  let w = parseInt(process.argv[3]);
+  let h = parseInt(process.argv[4]);
+  let d = parseInt(process.argv[5]);
+
+  if (op == "xy2d") {
+  }
+
+  else if (op == "d2xy") {
+  }
+
+  else if (op == "xyz2d") {
+
+    for (let x=0; x<w; x++) {
+      for (let y=0; y<h; y++) {
+        for (let z=0; z<d; z++) {
+          let idx = gilbertxyz2d(x,y,z,w,h,d);
+          console.log(idx,x,y,z);
+        }
+      }
+    }
+
+  }
+
+  else if (op == "d2xyz") {
+  }
+
+
+
+
 
   /*
   let w= 15;

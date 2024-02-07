@@ -166,9 +166,7 @@ def gilbertd2xyz_r(dst_idx, cur_idx,
                                   bx, by, bz,
                                   cx, cy, cz)
         cur_idx = nxt_idx
- 
-        #nxt_idx = cur_idx + abs( ((ax-ax2)+(ay-ay2)+(az-az2))*(bx+by+bz)*(cx+cy+cz) )
-        #if (cur_idx <= dst_idx) and (dst_idx < nxt_idx):
+
         return gilbertd2xyz_r(dst_idx,cur_idx,
                               x+ax2, y+ay2, z+az2,
                               ax-ax2, ay-ay2, az-az2,
@@ -299,24 +297,12 @@ def gilbertxyz2d_r(cur_idx,
     # trivial row/column fills
     if h == 1 and d == 1:
         return cur_idx + (dax*(x_dst-x)) + (day*(y_dst-y)) + (daz*(z_dst-z)); 
-        #for i in range(0, w):
-        #    yield(x, y, z)
-        #    (x, y, z) = (x + dax, y + day, z + daz)
-        #return
 
     if w == 1 and d == 1:
         return cur_idx + (dbx*(x_dst-x)) + (dby*(y_dst-y)) + (dbz*(z_dst-z)); 
-        #for i in range(0, h):
-        #    yield(x, y, z)
-        #    (x, y, z) = (x + dbx, y + dby, z + dbz)
-        #return
 
     if w == 1 and h == 1:
         return cur_idx + (dcx*(x_dst-x)) + (dcy*(y_dst-y)) + (dcz*(z_dst-z)); 
-        #for i in range(0, d):
-        #    yield(x, y, z)
-        #    (x, y, z) = (x + dcx, y + dcy, z + dcz)
-        #return
 
     (ax2, ay2, az2) = (ax//2, ay//2, az//2)
     (bx2, by2, bz2) = (bx//2, by//2, bz//2)
@@ -421,89 +407,83 @@ def gilbertxyz2d_r(cur_idx,
                                   cx-cx2, cy-cy2, cz-cz2)
         cur_idx += abs( (ax+ay+az)*(bx+by+bz)*((cx-cx2)+(cy-cy2)+(cz-cz2)) )
 
-        if inbounds(x_dst,y_dst,z_dst,
-                    x+(ax-dax)+(cx2-dcx),y+(ay-day)+(cy2-dcy),z+(az-daz)+(cz2-dcz),
-                    -cx2,-cy2,-cz2,
-                    -(ax-ax2),-(ay-ay2),-(az-az2),
-                    bx,by,bz):
-            return gilbertxyz2d_r(cur_idx,
-                                  x_dst,y_dst,z_dst,
-                                  x+(ax-dax)+(cx2-dcx),
-                                  y+(ay-day)+(cy2-dcy),
-                                  z+(az-daz)+(cz2-dcz),
-                                  -cx2, -cy2, -cz2,
-                                  -(ax-ax2), -(ay-ay2), -(az-az2),
-                                  bx, by, bz)
-
-    # regular case, split in all w/h/d
-    else:
-        if inbounds(x_dst,y_dst,z_dst,
-                    x,y,z,
-                    bx2,by2,bz2,
-                    cx2,cy2,cz2,
-                    ax2,ay2,az2):
-          return gilbertxyz2d_r(cur_idx,x_dst,y_dst,z_dst,
-                                x, y, z,
-                                bx2, by2, bz2,
-                                cx2, cy2, cz2,
-                                ax2, ay2, az2)
-        cur_idx += abs( (bx2+by2+bz2)*(cx2+cy2+cz2)*(ax2+ay2+az2) )
-
-        if inbounds(x_dst,y_dst,z_dst,
-                    x+bx2, y+by2, z+bz2,
-                    cx, cy, cz,
-                    ax2, ay2, az2,
-                    bx-bx2, by-by2, bz-bz2):
-            return gilbertxyz2d_r(cur_idx,
-                                  x_dst,y_dst,z_dst,
-                                  x+bx2, y+by2, z+bz2,
-                                  cx, cy, cz,
-                                  ax2, ay2, az2,
-                                  bx-bx2, by-by2, bz-bz2)
-        cur_idx += abs( (cx+cy+cz)*(ax2+ay2+az2)*((bx-bx2)+(by-by2)+(bz-bz2)) )
-
-        if inbounds(x_dst,y_dst,z_dst,
-                    x+(bx2-dbx)+(cx-dcx),
-                    y+(by2-dby)+(cy-dcy),
-                    z+(bz2-dbz)+(cz-dcz),
-                    ax, ay, az,
-                    -bx2, -by2, -bz2,
-                    -(cx-cx2), -(cy-cy2), -(cz-cz2)):
-            return gilbertxyz2d_r(cur_idx,
-                                  x_dst,y_dst,z_dst,
-                                  x+(bx2-dbx)+(cx-dcx),
-                                  y+(by2-dby)+(cy-dcy),
-                                  z+(bz2-dbz)+(cz-dcz),
-                                  ax, ay, az,
-                                  -bx2, -by2, -bz2,
-                                  -(cx-cx2), -(cy-cy2), -(cz-cz2))
-        cur_idx += abs( (ax+ay+az)*(-bx2-by2-bz2)*(-(cx-cx2)-(cy-cy2)-(cz-cz2)) )
-
-        if inbounds(x_dst,y_dst,z_dst,
-                    x+(ax-dax)+bx2+(cx-dcx),
-                    y+(ay-day)+by2+(cy-dcy),
-                    z+(az-daz)+bz2+(cz-dcz),
-                    -cx, -cy, -cz,
-                    -(ax-ax2), -(ay-ay2), -(az-az2),
-                    bx-bx2, by-by2, bz-bz2):
-            return gilbertxyz2d_r(cur_idx,
-                                  x_dst,y_dst,z_dst,
-                                  x+(ax-dax)+bx2+(cx-dcx),
-                                  y+(ay-day)+by2+(cy-dcy),
-                                  z+(az-daz)+bz2+(cz-dcz),
-                                  -cx, -cy, -cz,
-                                  -(ax-ax2), -(ay-ay2), -(az-az2),
-                                  bx-bx2, by-by2, bz-bz2)
-        cur_idx += abs( (-cx-cy-cz)*(-(ax-ax2)-(ay-ay2)-(az-az2))*((bx-bx2)+(by-by2)+(bz-bz2)) )
-
         return gilbertxyz2d_r(cur_idx,
                               x_dst,y_dst,z_dst,
-                              x+(ax-dax)+(bx2-dbx),
-                              y+(ay-day)+(by2-dby),
-                              z+(az-daz)+(bz2-dbz),
-                              -bx2, -by2, -bz2,
+                              x+(ax-dax)+(cx2-dcx),
+                              y+(ay-day)+(cy2-dcy),
+                              z+(az-daz)+(cz2-dcz),
+                              -cx2, -cy2, -cz2,
+                              -(ax-ax2), -(ay-ay2), -(az-az2),
+                              bx, by, bz)
+
+    # regular case, split in all w/h/d
+    if inbounds(x_dst,y_dst,z_dst,
+                x,y,z,
+                bx2,by2,bz2,
+                cx2,cy2,cz2,
+                ax2,ay2,az2):
+        return gilbertxyz2d_r(cur_idx,x_dst,y_dst,z_dst,
+                              x, y, z,
+                              bx2, by2, bz2,
                               cx2, cy2, cz2,
-                              -(ax-ax2), -(ay-ay2), -(az-az2))
+                              ax2, ay2, az2)
+    cur_idx += abs( (bx2+by2+bz2)*(cx2+cy2+cz2)*(ax2+ay2+az2) )
+
+    if inbounds(x_dst,y_dst,z_dst,
+                x+bx2, y+by2, z+bz2,
+                cx, cy, cz,
+                ax2, ay2, az2,
+                bx-bx2, by-by2, bz-bz2):
+        return gilbertxyz2d_r(cur_idx,
+                              x_dst,y_dst,z_dst,
+                              x+bx2, y+by2, z+bz2,
+                              cx, cy, cz,
+                              ax2, ay2, az2,
+                              bx-bx2, by-by2, bz-bz2)
+    cur_idx += abs( (cx+cy+cz)*(ax2+ay2+az2)*((bx-bx2)+(by-by2)+(bz-bz2)) )
+
+    if inbounds(x_dst,y_dst,z_dst,
+                x+(bx2-dbx)+(cx-dcx),
+                y+(by2-dby)+(cy-dcy),
+                z+(bz2-dbz)+(cz-dcz),
+                ax, ay, az,
+                -bx2, -by2, -bz2,
+                -(cx-cx2), -(cy-cy2), -(cz-cz2)):
+        return gilbertxyz2d_r(cur_idx,
+                              x_dst,y_dst,z_dst,
+                              x+(bx2-dbx)+(cx-dcx),
+                              y+(by2-dby)+(cy-dcy),
+                              z+(bz2-dbz)+(cz-dcz),
+                              ax, ay, az,
+                              -bx2, -by2, -bz2,
+                              -(cx-cx2), -(cy-cy2), -(cz-cz2))
+    cur_idx += abs( (ax+ay+az)*(-bx2-by2-bz2)*(-(cx-cx2)-(cy-cy2)-(cz-cz2)) )
+
+    if inbounds(x_dst,y_dst,z_dst,
+                x+(ax-dax)+bx2+(cx-dcx),
+                y+(ay-day)+by2+(cy-dcy),
+                z+(az-daz)+bz2+(cz-dcz),
+                -cx, -cy, -cz,
+                -(ax-ax2), -(ay-ay2), -(az-az2),
+                bx-bx2, by-by2, bz-bz2):
+        return gilbertxyz2d_r(cur_idx,
+                              x_dst,y_dst,z_dst,
+                              x+(ax-dax)+bx2+(cx-dcx),
+                              y+(ay-day)+by2+(cy-dcy),
+                              z+(az-daz)+bz2+(cz-dcz),
+                              -cx, -cy, -cz,
+                              -(ax-ax2), -(ay-ay2), -(az-az2),
+                              bx-bx2, by-by2, bz-bz2)
+    cur_idx += abs( (-cx-cy-cz)*(-(ax-ax2)-(ay-ay2)-(az-az2))*((bx-bx2)+(by-by2)+(bz-bz2)) )
+
+    return gilbertxyz2d_r(cur_idx,
+                          x_dst,y_dst,z_dst,
+                          x+(ax-dax)+(bx2-dbx),
+                          y+(ay-day)+(by2-dby),
+                          z+(az-daz)+(bz2-dbz),
+                          -bx2, -by2, -bz2,
+                          cx2, cy2, cz2,
+                          -(ax-ax2), -(ay-ay2), -(az-az2))
 
 
 
