@@ -80,7 +80,30 @@ function draw_curve() {
   let S = info.S;
   let T = info.T;
 
-  two.clear();
+  //two.clear();
+
+  let N = (W*H);
+
+  let n = N-1;
+  if (n==0) { return; }
+
+  if (n < info.line.length) {
+    let m = info.line.length;
+    for (let ii=n; ii<m; ii++) {
+      info.line[ii].visible = false;
+      info.two.remove( info.line[ii] );
+    }
+    info.line = info.line.slice(0,n);
+  }
+
+  if (n > info.line.length) {
+    let m = info.line.length;
+    for (let ii=m; ii<n; ii++) {
+      let _line = two.makeLine(0,0,1,1);
+      _line.visible = false;
+      info.line.push( _line );
+    }
+  }
 
   for (let idx=1; idx<(W*H); idx++) {
     let q = gilbert.d2xy( idx-1, W, H );
@@ -92,16 +115,19 @@ function draw_curve() {
     q.x += T.x; q.y += T.y;
     p.x += T.x; p.y += T.y;
 
-    let _line = two.makeLine(q.x, q.y, p.x, p.y);
+    info.line[idx-1].vertices[0].x = q.x;
+    info.line[idx-1].vertices[0].y = q.y;
+    info.line[idx-1].vertices[1].x = p.x;
+    info.line[idx-1].vertices[1].y = p.y;
+
+    info.line[idx-1].visible = true;
 
     let hue = Math.floor(360*idx / (W*H)).toString();
     let lit = '55%';
     let crm = '0.35';
     let clr = 'oklch(' + [ lit,crm,hue ].join(" ") + ')';
 
-    _line.stroke = clr;
-
-    info.line.push( _line );
+    info.line[idx-1].stroke = clr;
   }
 
   two.update();
