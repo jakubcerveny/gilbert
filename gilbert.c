@@ -850,6 +850,14 @@ int main(int argc, char **argv) {
 
   if (argc < 4) {
     printf("provide args\n");
+    printf("\n");
+    printf("usage:\n");
+    printf("\n");
+    printf("  gilbert <op> <width> <height> [depth]\n");
+    printf("\n");
+    printf("    op      - one of \"xy2d\",\"2dxy\",\"xyz2d\",\"d2xyz\"\n");
+    printf("    depth   - default to 1 for 3D Gilbert with no depth specified\n");
+    printf("\n");
     exit(-1);
   }
 
