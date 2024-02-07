@@ -1,0 +1,6 @@
+
+# ignore symlinks only for this directory
+gilbert2d.py
+gilbert3d.py
+gilbert.js
+gilbert
