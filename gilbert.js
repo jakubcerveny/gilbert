@@ -58,15 +58,25 @@ function inbounds3(p, s, a, b, c) {
 function gilbertxy2d(x,y,w,h) {
   let _q = {"x":x, "y":y};
   let _p = {"x":0, "y":0};
-  let _a = {"x":w, "y":0};
-  let _b = {"x":0, "y":h};
+  let _a = {"x":0, "y":h};
+  let _b = {"x":w, "y":0};
+
+  if (w >= h) {
+    _a.x = w; _a.y = 0;
+    _b.x = 0; _b.y = h;
+  }
   return gilbertxy2d_r(0, _q, _p, _a, _b);
 }
 
 function gilbertd2xy(idx,w,h) {
   let _p = {"x":0, "y":0};
-  let _a = {"x":w, "y":0};
-  let _b = {"x":0, "y":h};
+  let _a = {"x":0, "y":h};
+  let _b = {"x":w, "y":0};
+
+  if (w >= h) {
+    _a.x = w; _a.y = 0;
+    _b.x = 0; _b.y = h;
+  }
   return gilbertd2xy_r(idx,0,_p,_a,_b);
 }
 
@@ -111,8 +121,10 @@ function gilbertd2xy_r( dst_idx,cur_idx, p, a, b) {
   let db = { "x": sgn(b.x), "y": sgn(b.y) };
   let d = { "x": da.x+db.x, "y": da.y+db.y, "i": dst_idx - cur_idx };
 
-  if (h==1) { return { "x": p.x + da.x*d.i, "y": p.y + da.y*d.i }; }
-  if (w==1) { return { "x": p.x + db.x*d.i, "y": p.y + db.y*d.i }; }
+  if (h==1) {
+    return { "x": p.x + da.x*d.i, "y": p.y + da.y*d.i }; }
+  if (w==1) {
+    return {"x": p.x + db.x*d.i, "y": p.y + db.y*d.i }; }
 
   let a2 = { "x": Math.floor(a.x/2), "y": Math.floor(a.y/2) };
   let b2 = { "x": Math.floor(b.x/2), "y": Math.floor(b.y/2) };
@@ -120,7 +132,8 @@ function gilbertd2xy_r( dst_idx,cur_idx, p, a, b) {
   let w2 = Math.abs(a2.x + a2.y);
   let h2 = Math.abs(b2.x + b2.y);
 
-  if (2*w > 3*h) {
+
+  if ((2*w) > (3*h)) {
 
     // prefer even steps
     if ((w2%2) && (w>2)) {
@@ -136,6 +149,7 @@ function gilbertd2xy_r( dst_idx,cur_idx, p, a, b) {
 
     _p = { "x":p.x+a2.x, "y":p.y+a2.y };
     _a = { "x":a.x-a2.x, "y":a.y-a2.y };
+
     return gilbertd2xy_r(dst_idx,cur_idx, _p, _a, b);
   }
 
@@ -166,6 +180,7 @@ function gilbertd2xy_r( dst_idx,cur_idx, p, a, b) {
   };
   _a = { "x": -b2.x, "y": -b2.y };
   _b = { "x": -(a.x-a2.x), "y": -(a.y-a2.y) };
+
   return gilbertd2xy_r(dst_idx, cur_idx, _p, _a, _b);
 }
 

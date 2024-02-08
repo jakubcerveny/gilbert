@@ -17,13 +17,20 @@ int gilbertxy2d_r(int cur_idx,
                   int bx,int by );
 
 int gilbertxy2d(int x, int y, int w, int h) {
-  return gilbertxy2d_r(0, x,y, 0,0, w,0, 0,h);
+  if (w >= h) {
+    return gilbertxy2d_r(0, x,y, 0,0, w,0, 0,h);
+  }
+  return gilbertxy2d_r(0, x,y, 0,0, 0,h, w,0);
 }
 
 int gilbertd2xy(int *x, int *y, int idx,int w,int h) {
   *x = 0;
   *y = 0;
-  return gilbertd2xy_r(idx,0, x,y, w,0, 0,h);
+
+  if (w >= h) {
+    return gilbertd2xy_r(idx,0, x,y, w,0, 0,h);
+  }
+  return gilbertd2xy_r(idx,0, x,y, 0,h, w,0);
 }
 
 int gilbertd2xyz_r(int dst_idx, int cur_idx,

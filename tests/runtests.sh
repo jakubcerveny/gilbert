@@ -103,13 +103,32 @@ gilbert_cmp3 () {
 
 }
 
+x=10 ; y=2
+gilbert_cmp2 $x $y
+
+x=2 ; y=10
+gilbert_cmp2 $x $y
+
+x=10 ; y=2 ; z=1
+gilbert_cmp3 $x $y $z
+
+x=2 ; y=10 ; z=1
+gilbert_cmp3 $x $y $z
+
+
 x=100 ; y=63
+gilbert_cmp2 $x $y
+
+x=63 ; y=100
 gilbert_cmp2 $x $y
 
 x=8 ; y=6 ; z=4
 gilbert_cmp3 $x $y $z
 
 x=40 ; y=30
+gilbert_cmp2 $x $y
+
+x=30 ; y=40
 gilbert_cmp2 $x $y
 
 x=40 ; y=30 ; z=20
@@ -119,6 +138,9 @@ x=20 ; y=12 ; z=2
 gilbert_cmp3 $x $y $z
 
 x=15 ; y=12
+gilbert_cmp2 $x $y
+
+x=12 ; y=15
 gilbert_cmp2 $x $y
 
 x=7 ; y=6 ; z=4
