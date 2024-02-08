@@ -102,7 +102,7 @@ int gilbertd2xyz(int *x, int *y, int *z, int idx, int width, int height, int dep
 }
 
 
-int sgn(int x) {
+static int sgn(int x) {
   if (x<0) { return -1; }
   if (x>0) { return  1; }
   return 0;
@@ -170,16 +170,23 @@ int inbounds3(int x,  int y,  int z,
 }
 
 
+
 int gilbertd2xy_r(int dst_idx, int cur_idx,
                   int *xres, int *yres,
                   int ax,int ay,
                   int bx,int by ) {
+  static int max_iter = 0;
+
   int nxt_idx;
   int w,h, x,y,
       dax,day,
       dbx,dby,
-      dx,dy,di;
+      //dx,dy,
+      di;
   int ax2,ay2, bx2,by2, w2,h2;
+
+  if (max_iter > 100000) { return -1; }
+  max_iter++;
 
   w = abs(ax + ay);
   h = abs(bx + by);
@@ -195,8 +202,8 @@ int gilbertd2xy_r(int dst_idx, int cur_idx,
   dbx = sgn(bx);
   dby = sgn(by);
 
-  dx = dax+dbx;
-  dy = day+dby;
+  //dx = dax+dbx;
+  //dy = day+dby;
   di = dst_idx - cur_idx;
 
   if (h == 1) {
@@ -211,8 +218,11 @@ int gilbertd2xy_r(int dst_idx, int cur_idx,
     return 0;
   }
 
-  ax2 = ax/2; ay2 = ay/2;
-  bx2 = bx/2; by2 = by/2;
+  // floor function
+  ax2 = (int)floor((double)ax/2.0);
+  ay2 = (int)floor((double)ay/2.0);
+  bx2 = (int)floor((double)bx/2.0);
+  by2 = (int)floor((double)by/2.0);
 
   w2 = abs(ax2 + ay2);
   h2 = abs(bx2 + by2);
@@ -263,7 +273,6 @@ int gilbertd2xy_r(int dst_idx, int cur_idx,
 
   *xres = x+(ax-dax)+(bx2-dbx);
   *yres = y+(ay-day)+(by2-dby);
-
   return gilbertd2xy_r( dst_idx, cur_idx,
                         xres,yres,
                         -bx2, -by2,
@@ -304,10 +313,10 @@ int gilbertxy2d_r(int cur_idx,
     return cur_idx + (dx*(x_dst-x));
   }
 
-  ax2 = ax/2;
-  ay2 = ay/2;
-  bx2 = bx/2;
-  by2 = by/2;
+  ax2 = (int)floor((double)ax/2.0);
+  ay2 = (int)floor((double)ay/2.0);
+  bx2 = (int)floor((double)bx/2.0);
+  by2 = (int)floor((double)by/2.0);
 
   w2 = abs(ax2 + ay2);
   h2 = abs(bx2 + by2);
@@ -411,9 +420,17 @@ int gilbertd2xyz_r(int dst_idx, int cur_idx,
     return 0;
   }
 
-  ax2=ax/2; ay2=ay/2; az2=az/2;
-  bx2=bx/2; by2=by/2; bz2=bz/2;
-  cx2=cx/2; cy2=cy/2; cz2=cz/2;
+  ax2=(int)floor((double)ax/2.0);
+  ay2=(int)floor((double)ay/2.0);
+  az2=(int)floor((double)az/2.0);
+
+  bx2=(int)floor((double)bx/2.0);
+  by2=(int)floor((double)by/2.0);
+  bz2=(int)floor((double)bz/2.0);
+
+  cx2=(int)floor((double)cx/2.0);
+  cy2=(int)floor((double)cy/2.0);
+  cz2=(int)floor((double)cz/2.0);
 
   w2 = abs(ax2 + ay2 + az2);
   h2 = abs(bx2 + by2 + bz2);
@@ -633,9 +650,17 @@ int gilbertxyz2d_r(int cur_idx,
     return cur_idx + (dcx*(x_dst-x)) + (dcy*(y_dst-y)) + (dcz*(z_dst-z)); 
   }
 
-  ax2=ax/2; ay2=ay/2; az2=az/2;
-  bx2=bx/2; by2=by/2; bz2=bz/2;
-  cx2=cx/2; cy2=cy/2; cz2=cz/2;
+  ax2=(int)floor((double)ax/2.0);
+  ay2=(int)floor((double)ay/2.0);
+  az2=(int)floor((double)az/2.0);
+
+  bx2=(int)floor((double)bx/2.0);
+  by2=(int)floor((double)by/2.0);
+  bz2=(int)floor((double)bz/2.0);
+
+  cx2=(int)floor((double)cx/2.0);
+  cy2=(int)floor((double)cy/2.0);
+  cz2=(int)floor((double)cz/2.0);
 
   w2 = abs(ax2 + ay2 + az2);
   h2 = abs(bx2 + by2 + bz2);
