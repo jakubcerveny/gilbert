@@ -1,45 +1,45 @@
 // SPDX-License-Identifier: BSD-2-Clause
-// Copyright (c) 2018 Jakub Červený
+// Copyright (c) 2024 abetusk
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 
-int gilbertd2xy_r(int dst_idx, int cur_idx,
+int gilbert_d2xy_r(int dst_idx, int cur_idx,
                   int *xres, int *yres,
                   int ax,int ay,
                   int bx,int by );
 
-int gilbertxy2d_r(int cur_idx,
+int gilbert_xy2d_r(int cur_idx,
                   int x_dst, int y_dst,
                   int x, int y,
                   int ax, int ay,
                   int bx,int by );
 
-int gilbertxy2d(int x, int y, int w, int h) {
+int gilbert_xy2d(int x, int y, int w, int h) {
   if (w >= h) {
-    return gilbertxy2d_r(0, x,y, 0,0, w,0, 0,h);
+    return gilbert_xy2d_r(0, x,y, 0,0, w,0, 0,h);
   }
-  return gilbertxy2d_r(0, x,y, 0,0, 0,h, w,0);
+  return gilbert_xy2d_r(0, x,y, 0,0, 0,h, w,0);
 }
 
-int gilbertd2xy(int *x, int *y, int idx,int w,int h) {
+int gilbert_d2xy(int *x, int *y, int idx,int w,int h) {
   *x = 0;
   *y = 0;
 
   if (w >= h) {
-    return gilbertd2xy_r(idx,0, x,y, w,0, 0,h);
+    return gilbert_d2xy_r(idx,0, x,y, w,0, 0,h);
   }
-  return gilbertd2xy_r(idx,0, x,y, 0,h, w,0);
+  return gilbert_d2xy_r(idx,0, x,y, 0,h, w,0);
 }
 
-int gilbertd2xyz_r(int dst_idx, int cur_idx,
+int gilbert_d2xyz_r(int dst_idx, int cur_idx,
                    int *x, int *y, int *z,
                    int ax, int ay, int az,
                    int bx, int by, int bz,
                    int cx, int cy, int cz);
 
-int gilbertxyz2d_r(int cur_idx,
+int gilbert_xyz2d_r(int cur_idx,
                    int x_dst, int y_dst, int z_dst,
                    int x,  int y,  int z,
                    int ax, int ay, int az,
@@ -47,16 +47,16 @@ int gilbertxyz2d_r(int cur_idx,
                    int cx, int cy, int cz);
 
 
-int gilbertxyz2d(int x, int y, int z, int width, int height, int depth) {
+int gilbert_xyz2d(int x, int y, int z, int width, int height, int depth) {
   if ((width >= height) && (width >= depth)) {
-    return gilbertxyz2d_r( 0,x,y,z,
+    return gilbert_xyz2d_r( 0,x,y,z,
                            0, 0, 0,
                            width, 0, 0,
                            0, height, 0,
                            0, 0, depth);
   }
   else if ((height >= width) && (height >= depth)) {
-    return gilbertxyz2d_r( 0,x,y,z,
+    return gilbert_xyz2d_r( 0,x,y,z,
                            0, 0, 0,
                            0, height, 0,
                            width, 0, 0,
@@ -64,21 +64,21 @@ int gilbertxyz2d(int x, int y, int z, int width, int height, int depth) {
   }
 
   // depth >= width and depth >= height
-  return gilbertxyz2d_r( 0,x,y,z,
+  return gilbert_xyz2d_r( 0,x,y,z,
                          0, 0, 0,
                          0, 0, depth,
                          width, 0, 0,
                          0, height, 0);
 }
 
-int gilbertd2xyz(int *x, int *y, int *z, int idx, int width, int height, int depth) {
+int gilbert_d2xyz(int *x, int *y, int *z, int idx, int width, int height, int depth) {
 
   *x = 0;
   *y = 0;
   *z = 0;
 
   if ((width >= height) && (width >= depth)) {
-    return gilbertd2xyz_r( idx, 0,
+    return gilbert_d2xyz_r( idx, 0,
                            x,y,z,
                            width, 0, 0,
                            0, height, 0,
@@ -86,7 +86,7 @@ int gilbertd2xyz(int *x, int *y, int *z, int idx, int width, int height, int dep
   }
 
   else if ((height >= width) && (height >= depth)) {
-    return gilbertd2xyz_r( idx, 0,
+    return gilbert_d2xyz_r( idx, 0,
                            x,y,z,
                            0, height, 0,
                            width, 0, 0,
@@ -94,7 +94,7 @@ int gilbertd2xyz(int *x, int *y, int *z, int idx, int width, int height, int dep
   }
 
   // depth >= width and depth >= height
-  return gilbertd2xyz_r( idx, 0,
+  return gilbert_d2xyz_r( idx, 0,
                          x,y,z,
                          0, 0, depth,
                          width, 0, 0,
@@ -171,7 +171,7 @@ int inbounds3(int x,  int y,  int z,
 
 
 
-int gilbertd2xy_r(int dst_idx, int cur_idx,
+int gilbert_d2xy_r(int dst_idx, int cur_idx,
                   int *xres, int *yres,
                   int ax,int ay,
                   int bx,int by ) {
@@ -239,13 +239,13 @@ int gilbertd2xy_r(int dst_idx, int cur_idx,
     if ((cur_idx <= dst_idx) && (dst_idx < nxt_idx)) {
       *xres = x;
       *yres = y;
-      return gilbertd2xy_r(dst_idx, cur_idx,  xres, yres, ax2, ay2, bx, by);
+      return gilbert_d2xy_r(dst_idx, cur_idx,  xres, yres, ax2, ay2, bx, by);
     }
     cur_idx = nxt_idx;
 
     *xres = x+ax2;
     *yres = y+ay2;
-    return gilbertd2xy_r(dst_idx, cur_idx, xres, yres, ax-ax2, ay-ay2, bx, by);
+    return gilbert_d2xy_r(dst_idx, cur_idx, xres, yres, ax-ax2, ay-ay2, bx, by);
   }
 
   if ((h2 % 2) && (h > 2)) {
@@ -259,7 +259,7 @@ int gilbertd2xy_r(int dst_idx, int cur_idx,
   if ((cur_idx <= dst_idx) && (dst_idx < nxt_idx)) {
     *xres = x;
     *yres = y;
-    return gilbertd2xy_r(dst_idx, cur_idx, xres,yres, bx2,by2, ax2,ay2);
+    return gilbert_d2xy_r(dst_idx, cur_idx, xres,yres, bx2,by2, ax2,ay2);
   }
   cur_idx = nxt_idx;
 
@@ -267,19 +267,19 @@ int gilbertd2xy_r(int dst_idx, int cur_idx,
   if ((cur_idx <= dst_idx) && (dst_idx < nxt_idx)) {
     *xres = x+bx2;
     *yres = y+by2;
-    return gilbertd2xy_r(dst_idx, cur_idx, xres,yres, ax,ay, bx-bx2,by-by2);
+    return gilbert_d2xy_r(dst_idx, cur_idx, xres,yres, ax,ay, bx-bx2,by-by2);
   }
   cur_idx = nxt_idx;
 
   *xres = x+(ax-dax)+(bx2-dbx);
   *yres = y+(ay-day)+(by2-dby);
-  return gilbertd2xy_r( dst_idx, cur_idx,
+  return gilbert_d2xy_r( dst_idx, cur_idx,
                         xres,yres,
                         -bx2, -by2,
                         -(ax-ax2), -(ay-ay2));
 }
 
-int gilbertxy2d_r(int cur_idx,
+int gilbert_xy2d_r(int cur_idx,
                   int x_dst, int y_dst,
                   int x, int y,
                   int ax, int ay,
@@ -329,11 +329,11 @@ int gilbertxy2d_r(int cur_idx,
     }
 
     if (inbounds2( x_dst, y_dst, x,y, ax2,ay2, bx,by )) {
-      return gilbertxy2d_r(cur_idx, x_dst, y_dst, x, y, ax2, ay2, bx, by);
+      return gilbert_xy2d_r(cur_idx, x_dst, y_dst, x, y, ax2, ay2, bx, by);
     }
     cur_idx += abs((ax2 + ay2)*(bx + by));
 
-    return gilbertxy2d_r(cur_idx, x_dst, y_dst, x+ax2, y+ay2, ax-ax2, ay-ay2, bx, by);
+    return gilbert_xy2d_r(cur_idx, x_dst, y_dst, x+ax2, y+ay2, ax-ax2, ay-ay2, bx, by);
   }
 
   if ((h2 % 2) && (h > 2)) {
@@ -344,16 +344,16 @@ int gilbertxy2d_r(int cur_idx,
 
   // standard case: one step up, one long horizontal, one step down
   if (inbounds2( x_dst,y_dst, x,y, bx2,by2, ax2,ay2 )) {
-    return gilbertxy2d_r(cur_idx, x_dst,y_dst, x,y, bx2,by2, ax2,ay2);
+    return gilbert_xy2d_r(cur_idx, x_dst,y_dst, x,y, bx2,by2, ax2,ay2);
   }
   cur_idx += abs((bx2 + by2)*(ax2 + ay2));
 
   if (inbounds2( x_dst,y_dst, x+bx2, y+by2, ax, ay, bx-bx2, by-by2)) {
-    return gilbertxy2d_r(cur_idx, x_dst,y_dst, x+bx2,y+by2, ax,ay, bx-bx2,by-by2);
+    return gilbert_xy2d_r(cur_idx, x_dst,y_dst, x+bx2,y+by2, ax,ay, bx-bx2,by-by2);
   }
   cur_idx += abs((ax+ay)*((bx-bx2) + (by-by2)));
 
-  return gilbertxy2d_r(cur_idx, x_dst,y_dst,
+  return gilbert_xy2d_r(cur_idx, x_dst,y_dst,
                  x+(ax-dax)+(bx2-dbx),
                  y+(ay-day)+(by2-dby),
                  -bx2, -by2,
@@ -362,7 +362,7 @@ int gilbertxy2d_r(int cur_idx,
 
 
 
-int gilbertd2xyz_r(int dst_idx, int cur_idx,
+int gilbert_d2xyz_r(int dst_idx, int cur_idx,
                    int *xres, int *yres, int *zres,
                    int ax, int ay, int az,
                    int bx, int by, int bz,
@@ -448,7 +448,7 @@ int gilbertd2xyz_r(int dst_idx, int cur_idx,
       *xres = x;
       *yres = y;
       *zres = z;
-      return gilbertd2xyz_r(dst_idx,cur_idx,
+      return gilbert_d2xyz_r(dst_idx,cur_idx,
                             xres,yres,zres,
                             ax2, ay2, az2,
                             bx, by, bz,
@@ -460,7 +460,7 @@ int gilbertd2xyz_r(int dst_idx, int cur_idx,
     *xres = x+ax2;
     *yres = y+ay2;
     *zres = z+az2;
-    return gilbertd2xyz_r(dst_idx,cur_idx,
+    return gilbert_d2xyz_r(dst_idx,cur_idx,
                           xres,yres,zres,
                           ax-ax2, ay-ay2, az-az2,
                           bx, by, bz,
@@ -474,7 +474,7 @@ int gilbertd2xyz_r(int dst_idx, int cur_idx,
       *xres = x;
       *yres = y;
       *zres = z;
-      return gilbertd2xyz_r(dst_idx,cur_idx,
+      return gilbert_d2xyz_r(dst_idx,cur_idx,
                             xres,yres,zres,
                             bx2, by2, bz2,
                             cx, cy, cz,
@@ -487,7 +487,7 @@ int gilbertd2xyz_r(int dst_idx, int cur_idx,
       *xres = x+bx2;
       *yres = y+by2;
       *zres = z+bz2;
-      return gilbertd2xyz_r(dst_idx,cur_idx,
+      return gilbert_d2xyz_r(dst_idx,cur_idx,
                             xres,yres,zres,
                             ax, ay, az,
                             bx-bx2, by-by2, bz-bz2,
@@ -499,7 +499,7 @@ int gilbertd2xyz_r(int dst_idx, int cur_idx,
     *yres = y+(ay-day)+(by2-dby);
     *zres = z+(az-daz)+(bz2-dbz);
 
-    return gilbertd2xyz_r(dst_idx,cur_idx,
+    return gilbert_d2xyz_r(dst_idx,cur_idx,
                           xres,yres,zres,
                           -bx2, -by2, -bz2,
                           cx, cy, cz,
@@ -513,7 +513,7 @@ int gilbertd2xyz_r(int dst_idx, int cur_idx,
       *xres = x;
       *yres = y;
       *zres = z;
-      return gilbertd2xyz_r(dst_idx,cur_idx,
+      return gilbert_d2xyz_r(dst_idx,cur_idx,
                             xres,yres,zres,
                             cx2, cy2, cz2,
                             ax2, ay2, az2,
@@ -526,7 +526,7 @@ int gilbertd2xyz_r(int dst_idx, int cur_idx,
       *xres = x+cx2;
       *yres = y+cy2;
       *zres = z+cz2;
-      return gilbertd2xyz_r(dst_idx,cur_idx,
+      return gilbert_d2xyz_r(dst_idx,cur_idx,
                             xres,yres,zres,
                             ax, ay, az,
                             bx, by, bz,
@@ -538,7 +538,7 @@ int gilbertd2xyz_r(int dst_idx, int cur_idx,
     *yres = y+(ay-day)+(cy2-dcy);
     *zres = z+(az-daz)+(cz2-dcz);
 
-    return gilbertd2xyz_r(dst_idx,cur_idx,
+    return gilbert_d2xyz_r(dst_idx,cur_idx,
                           xres,yres,zres,
                           -cx2, -cy2, -cz2,
                           -(ax-ax2), -(ay-ay2), -(az-az2),
@@ -552,7 +552,7 @@ int gilbertd2xyz_r(int dst_idx, int cur_idx,
     *xres = x;
     *yres = y;
     *zres = z;
-    return gilbertd2xyz_r(dst_idx,cur_idx,
+    return gilbert_d2xyz_r(dst_idx,cur_idx,
                           xres,yres,zres,
                           bx2, by2, bz2,
                           cx2, cy2, cz2,
@@ -565,7 +565,7 @@ int gilbertd2xyz_r(int dst_idx, int cur_idx,
     *xres = x+bx2;
     *yres = y+by2;
     *zres = z+bz2;
-    return gilbertd2xyz_r(dst_idx,cur_idx,
+    return gilbert_d2xyz_r(dst_idx,cur_idx,
                           xres,yres,zres,
                           cx, cy, cz,
                           ax2, ay2, az2,
@@ -578,7 +578,7 @@ int gilbertd2xyz_r(int dst_idx, int cur_idx,
     *xres = x+(bx2-dbx)+(cx-dcx);
     *yres = y+(by2-dby)+(cy-dcy);
     *zres = z+(bz2-dbz)+(cz-dcz);
-    return gilbertd2xyz_r(dst_idx, cur_idx,
+    return gilbert_d2xyz_r(dst_idx, cur_idx,
                           xres,yres,zres,
                           ax, ay, az,
                           -bx2, -by2, -bz2,
@@ -591,7 +591,7 @@ int gilbertd2xyz_r(int dst_idx, int cur_idx,
     *xres = x+(ax-dax)+bx2+(cx-dcx);
     *yres = y+(ay-day)+by2+(cy-dcy);
     *zres = z+(az-daz)+bz2+(cz-dcz);
-    return gilbertd2xyz_r(dst_idx,cur_idx,
+    return gilbert_d2xyz_r(dst_idx,cur_idx,
                           xres,yres,zres,
                           -cx, -cy, -cz,
                           -(ax-ax2), -(ay-ay2), -(az-az2),
@@ -602,7 +602,7 @@ int gilbertd2xyz_r(int dst_idx, int cur_idx,
   *xres = x+(ax-dax)+(bx2-dbx);
   *yres = y+(ay-day)+(by2-dby);
   *zres = z+(az-daz)+(bz2-dbz);
-  return gilbertd2xyz_r(dst_idx,cur_idx,
+  return gilbert_d2xyz_r(dst_idx,cur_idx,
                         xres,yres,zres,
                         -bx2, -by2, -bz2,
                         cx2, cy2, cz2,
@@ -612,7 +612,7 @@ int gilbertd2xyz_r(int dst_idx, int cur_idx,
 
 
 
-int gilbertxyz2d_r(int cur_idx,
+int gilbert_xyz2d_r(int cur_idx,
                    int x_dst, int y_dst, int z_dst,
                    int x, int y, int z,
                    int ax, int ay, int az,
@@ -692,7 +692,7 @@ int gilbertxyz2d_r(int cur_idx,
                   ax2,ay2,az2,
                   bx,by,bz,
                   cx,cy,cz)) {
-      return gilbertxyz2d_r(cur_idx,
+      return gilbert_xyz2d_r(cur_idx,
                             x_dst,y_dst,z_dst,
                             x, y, z,
                             ax2, ay2, az2,
@@ -701,7 +701,7 @@ int gilbertxyz2d_r(int cur_idx,
     }
     cur_idx += abs( (ax2+ay2+az2)*(bx+by+bz)*(cx+cy+cz) );
 
-    return gilbertxyz2d_r(cur_idx,
+    return gilbert_xyz2d_r(cur_idx,
                           x_dst,y_dst,z_dst,
                           x+ax2, y+ay2, z+az2,
                           ax-ax2, ay-ay2, az-az2,
@@ -716,7 +716,7 @@ int gilbertxyz2d_r(int cur_idx,
                   bx2,by2,bz2,
                   cx,cy,cz,
                   ax2,ay2,az2)) {
-      return gilbertxyz2d_r(cur_idx,
+      return gilbert_xyz2d_r(cur_idx,
                             x_dst,y_dst,z_dst,
                             x, y, z,
                             bx2, by2, bz2,
@@ -730,7 +730,7 @@ int gilbertxyz2d_r(int cur_idx,
                   ax,ay,az,
                   bx-bx2,by-by2,bz-bz2,
                   cx,cy,cz)) {
-      return gilbertxyz2d_r(cur_idx,
+      return gilbert_xyz2d_r(cur_idx,
                             x_dst,y_dst,z_dst,
                             x+bx2, y+by2, z+bz2,
                             ax, ay, az,
@@ -739,7 +739,7 @@ int gilbertxyz2d_r(int cur_idx,
     }
     cur_idx += abs( (ax+ay+az)*((bx-bx2)+(by-by2)+(bz-bz2))*(cx+cy+cz) );
 
-    return gilbertxyz2d_r(cur_idx,
+    return gilbert_xyz2d_r(cur_idx,
                           x_dst,y_dst,z_dst,
                           x+(ax-dax)+(bx2-dbx),
                           y+(ay-day)+(by2-dby),
@@ -755,7 +755,7 @@ int gilbertxyz2d_r(int cur_idx,
                   x,y,z,
                   cx2,cy2,cz2,
                   ax2,ay2,az2, bx,by,bz)) {
-      return gilbertxyz2d_r(cur_idx,
+      return gilbert_xyz2d_r(cur_idx,
                             x_dst,y_dst,z_dst,
                             x, y, z,
                             cx2, cy2, cz2,
@@ -768,7 +768,7 @@ int gilbertxyz2d_r(int cur_idx,
                   x+cx2,y+cy2,z+cz2,
                   ax,ay,az, bx,by,bz,
                   cx-cx2,cy-cy2,cz-cz2)) {
-      return gilbertxyz2d_r(cur_idx,
+      return gilbert_xyz2d_r(cur_idx,
                             x_dst,y_dst,z_dst,
                             x+cx2, y+cy2, z+cz2,
                             ax, ay, az,
@@ -777,7 +777,7 @@ int gilbertxyz2d_r(int cur_idx,
     }
     cur_idx += abs( (ax+ay+az)*(bx+by+bz)*((cx-cx2)+(cy-cy2)+(cz-cz2)) );
 
-    return gilbertxyz2d_r(cur_idx,
+    return gilbert_xyz2d_r(cur_idx,
                           x_dst,y_dst,z_dst,
                           x+(ax-dax)+(cx2-dcx),
                           y+(ay-day)+(cy2-dcy),
@@ -794,7 +794,7 @@ int gilbertxyz2d_r(int cur_idx,
                 bx2,by2,bz2,
                 cx2,cy2,cz2,
                 ax2,ay2,az2)) {
-    return gilbertxyz2d_r(cur_idx,x_dst,y_dst,z_dst,
+    return gilbert_xyz2d_r(cur_idx,x_dst,y_dst,z_dst,
                           x, y, z,
                           bx2, by2, bz2,
                           cx2, cy2, cz2,
@@ -807,7 +807,7 @@ int gilbertxyz2d_r(int cur_idx,
                 cx, cy, cz,
                 ax2, ay2, az2,
                 bx-bx2, by-by2, bz-bz2)) {
-    return gilbertxyz2d_r(cur_idx,
+    return gilbert_xyz2d_r(cur_idx,
                           x_dst,y_dst,z_dst,
                           x+bx2, y+by2, z+bz2,
                           cx, cy, cz,
@@ -823,7 +823,7 @@ int gilbertxyz2d_r(int cur_idx,
                 ax, ay, az,
                 -bx2, -by2, -bz2,
                 -(cx-cx2), -(cy-cy2), -(cz-cz2))) {
-    return gilbertxyz2d_r(cur_idx,
+    return gilbert_xyz2d_r(cur_idx,
                           x_dst,y_dst,z_dst,
                           x+(bx2-dbx)+(cx-dcx),
                           y+(by2-dby)+(cy-dcy),
@@ -841,7 +841,7 @@ int gilbertxyz2d_r(int cur_idx,
                 -cx, -cy, -cz,
                 -(ax-ax2), -(ay-ay2), -(az-az2),
                 bx-bx2, by-by2, bz-bz2)) {
-    return gilbertxyz2d_r(cur_idx,
+    return gilbert_xyz2d_r(cur_idx,
                           x_dst,y_dst,z_dst,
                           x+(ax-dax)+bx2+(cx-dcx),
                           y+(ay-day)+by2+(cy-dcy),
@@ -852,7 +852,7 @@ int gilbertxyz2d_r(int cur_idx,
   }
   cur_idx += abs( (-cx-cy-cz)*(-(ax-ax2)-(ay-ay2)-(az-az2))*((bx-bx2)+(by-by2)+(bz-bz2)) );
 
-  return gilbertxyz2d_r(cur_idx,
+  return gilbert_xyz2d_r(cur_idx,
                         x_dst,y_dst,z_dst,
                         x+(ax-dax)+(bx2-dbx),
                         y+(ay-day)+(by2-dby),
@@ -910,7 +910,7 @@ int main(int argc, char **argv) {
 
     for (x=0; x<w; x++) {
       for (y=0; y<h; y++) {
-        idx = gilbertxy2d( x, y, w, h );
+        idx = gilbert_xy2d( x, y, w, h );
         printf("%i %i %i\n", idx, x, y);
       }
     }
@@ -919,7 +919,7 @@ int main(int argc, char **argv) {
   else if (strncmp("d2xy", buf, 1023)==0) {
 
     for (idx=0; idx<(w*h); idx++) {
-      gilbertd2xy( &x, &y, idx, w, h );
+      gilbert_d2xy( &x, &y, idx, w, h );
       printf("%i %i\n", x, y);
     }
 
@@ -929,7 +929,7 @@ int main(int argc, char **argv) {
     for (x=0; x<w; x++) {
       for (y=0; y<h; y++) {
         for (z=0; z<d; z++) {
-          idx = gilbertxyz2d( x,y,z, w,h,d );
+          idx = gilbert_xyz2d( x,y,z, w,h,d );
           printf("%i %i %i %i\n", idx, x, y, z);
         }
       }
@@ -940,7 +940,7 @@ int main(int argc, char **argv) {
   else if (strncmp("d2xyz", buf, 1023)==0) {
 
     for (idx=0; idx<(w*h*d); idx++) {
-      gilbertd2xyz( &x,&y,&z, idx, w,h,d );
+      gilbert_d2xyz( &x,&y,&z, idx, w,h,d );
       printf("%i %i %i\n", x, y, z);
     }
 

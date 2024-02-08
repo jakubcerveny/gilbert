@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-2-Clause
-// Copyright (c) 2018 Jakub Červený
+// Copyright (c) 2024 abetusk
 
 var info = {
   "W" : -1,

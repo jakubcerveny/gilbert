@@ -7,8 +7,16 @@
 
 ln -f -s ../gilbert2d.py .
 ln -f -s ../gilbert3d.py .
-ln -f -s ../gilbert.js .
-ln -f -s ../gilbert .
+ln -f -s ../gilbert_d2xy.py .
+ln -f -s ../gilbert_d2xyz.py .
+ln -f -s ../gilbert_xy2d.py .
+ln -f -s ../gilbert_xyz2d.py .
+ln -f -s ../ports/gilbert.js .
+ln -f -s ../ports/gilbert .
+
+pushd ../ports
+make
+popd
 
 gilbert_cmp2 () {
   local x=$1
@@ -17,13 +25,13 @@ gilbert_cmp2 () {
   echo -n "(python) xy2d[$x,$y]: "
   diff \
     <( ./gilbert2d.py $x $y 2> /dev/null ) \
-    <( ./gilbert2d.py --op xy2d $x $y | sort -n | cut -f2- -d' ' 2> /dev/null ) > /dev/null
+    <( ./gilbert_xy2d.py $x $y | sort -n | cut -f2- -d' ' 2> /dev/null ) > /dev/null
   if [[ $? != 0 ]] ; then echo "FAIL" ; else echo "pass" ; fi
 
   echo -n "(python) d2xy[$x,$y]: "
   diff \
     <( ./gilbert2d.py $x $y 2> /dev/null ) \
-    <( ./gilbert2d.py --op d2xy $x $y 2> /dev/null ) > /dev/null
+    <( ./gilbert_d2xy.py $x $y 2> /dev/null ) > /dev/null
   if [[ $? != 0 ]] ; then echo "FAIL" ; else echo "pass" ; fi
 
   ###
@@ -62,15 +70,21 @@ gilbert_cmp3 () {
   local z=$3
 
   echo -n "(python) xyz2d[$x,$y,$z]: "
+#  diff \
+#    <( ./gilbert3d.py $x $y $z 2> /dev/null ) \
+#    <( ./gilbert3d.py --op xyz2d $x $y $z | sort -n | cut -f2- -d' ' 2> /dev/null ) > /dev/null
   diff \
     <( ./gilbert3d.py $x $y $z 2> /dev/null ) \
-    <( ./gilbert3d.py --op xyz2d $x $y $z | sort -n | cut -f2- -d' ' 2> /dev/null ) > /dev/null
+    <( ./gilbert_xyz2d.py $x $y $z | sort -n | cut -f2- -d' ' 2> /dev/null ) > /dev/null
   if [[ $? != 0 ]] ; then echo "FAIL" ; else echo "pass" ; fi
 
   echo -n "(python) d2xyz[$x,$y,$z]: "
+#  diff \
+#    <( ./gilbert3d.py $x $y $z 2> /dev/null ) \
+#    <( ./gilbert3d.py --op d2xyz $x $y $z 2> /dev/null ) > /dev/null
   diff \
     <( ./gilbert3d.py $x $y $z 2> /dev/null ) \
-    <( ./gilbert3d.py --op d2xyz $x $y $z 2> /dev/null ) > /dev/null
+    <( ./gilbert_d2xyz.py $x $y $z 2> /dev/null ) > /dev/null
   if [[ $? != 0 ]] ; then echo "FAIL" ; else echo "pass" ; fi
 
   ###

@@ -24,7 +24,7 @@ by Lutz Tautenhahn in 2003:
 > [1] Lutz Tautenhahn: Draw a Space-Filling Curve of Arbitrary Size, http://lutanho.net/pic2html/draw_sfc.html, 2003.
 
 However, this algorithm is complex and would be very difficult to generalize to
-3D. Another aproach that focuses on evaluation speed is described in
+3D. Another approach that focuses on evaluation speed is described in
 
 > [2] Zhang J., Kamata S., Ueshige Y.: A Pseudo-Hilbert Scan Algorithm for Arbitrarily-Sized Rectangle Region, IWICPAS 2006.
 
@@ -99,6 +99,66 @@ obtained with
 ./gilbert2d.py 100 63 | octave --eval 'waitfor(plotpath(dlmread(stdin())));'
 ```
 
+### Random Access Functions
+
+The following programs provide a reference implementation to efficiently convert
+from an index point along the 1D generalized Hilbert curve to spatial coordinates, `d2xy`/`d2xyz`,
+and from spatial coordinates to the position along the generalized Hilbert curve, `xy2d`/`xyz2d`:
+
+| Program | Function | Output |
+|---|---|---|
+| `gilbert_d2xy.py` | `gilbert_d2xy(index,width,height)` | `(x,y)` |
+| `gilbert_xy2d.py` | `gilbert_xy2d(x,y,width,height)` | `index` |
+| `gilbert_d2xyz.py` | `gilbert_d2xyz(index,width,height,depth)` | `(x,y,z)` |
+| `gilbert_xyz2d.py` | `gilbert_xyz2d(x,y,z,width,height,depth)` | `index` |
+
+Each of the programs run on the command line enumerate through the points or indices for their
+respective `d2xy[z]` or `xy[z]2d` functions.
+
+The `gilbert_d2xy.py` and `gilbert_d2xyz.py` programs will print out the `index`, `x`, `y` and `z` point,
+where appropriate, in `x`, `y`, `z` order.
+
+For example:
+
+```
+./gilbert_xyz2d.py 20 12 2
+0 0 0 0
+1 0 0 1
+7 0 1 0
+6 0 1 1
+8 0 2 0
+...
+```
+
+To recover the index order traversal, one can sort on the first element (for example `./gilbert_xyz2d.py 20 12 2 | sort -n | cut -f2- -d' '`).
+
+Each of these functions follows the reference `gilbert2d.py` and `gilbert3d.py` implementations but
+"short circuit" the recursion when the index or spatial point wouldn't land in the sub problem.
+Each leg of the recursion is restricted to another rectangle or cuboid region, allowing for an easy determination
+of a spatial bounds check and to count the length of the path in the sub region.
+This provides an $O( \lg(N = W \cdot H \cdot D) )$ algorithm.
+
+### Ports
+
+There are reference implementations for JavaScript and C in the `ports` directory.
+
+| Language | Program | Function | Output |
+|----------|---------|----------|--------|
+| `C`      | `gilbert.c` | `int gilbert_d2xy(int *x, int *y, int idx, int width, int height)` | Values stored in `x`,`y` |
+| `C`      | `gilbert.c` | `int gilbert_xy2d(int x, int y, int width, int height)` | Returns index |
+| `C`      | `gilbert.c` | `int gilbert_d2xyz(int *x, int *y int *z, int idx, int width, int height, int depth)` | Values stored in `x`,`y`,`z` |
+| `C`      | `gilbert.c` | `int gilbert_xyz2d(int x, int y, int z, int width, int height, int depth)` | Returns index |
+| `JS`     | `gilbert.js` | `gilbert.d2xy(idx,width,height)` | Returns `{"x":x,"y":y}` object |
+| `JS`     | `gilbert.js` | `gilbert.xy2d(x,y,width,height)` | Returns index |
+| `JS`     | `gilbert.js` | `gilbert.d2xyz(idx,width,height,depth)` | Returns `{"x":x,"y":y, "z":z}` object |
+| `JS`     | `gilbert.js` | `gilbert.xyz2d(x,y,z,width,height,depth)` | Returns index |
+
+### [Web Demo](https://jakubcerveny.github.io/gilbert/demo)
+
+There is a web demo program, in the `demo/` sub directory, that can be used to to interactively explore
+2D generalized Hilbert curves.
+
+A live version can be found [here](https://jakubcerveny.github.io/gilbert/demo).
 
 ---
 
