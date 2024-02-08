@@ -16,6 +16,36 @@ var info = {
   "canvas": null
 };
 
+
+//---
+// https://stackoverflow.com/a/18197341 CC-BY-SA 
+// Matěj Pokorný (https://stackoverflow.com/users/2438165/mat%c4%9bj-pokorn%c3%bd)
+//
+function download(filename, text) {
+  let element = document.createElement('a');
+  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+  element.setAttribute('download', filename);
+  element.style.display = 'none';
+  document.body.appendChild(element);
+  element.click();
+  document.body.removeChild(element);
+}
+//
+//---
+
+function dl_svg() {
+
+  info.two.render();
+  info.two.update();
+  info.svg = info.container.innerHTML;
+
+  let txt = info.svg.toString();
+  let wxh_str = info.W.toString() + "x" + info.H.toString();
+
+  download("gilbert" + wxh_str + ".svg", txt);
+
+}
+
 function update_color() {
   if (info.color == "color") { info.color = "bw"; }
   else { info.color = "color"; }
@@ -133,16 +163,33 @@ function draw_curve() {
     let clr = "#666";
 
     if (info.color=="color") {
+
+      // imo, oklch looks a lot better, especially for the
+      // yellows, but inkscape is having problems rendering it.
+      // Kept here for posteririty but to actually get an
+      // exported SVG to render in inkscape, the HSL below
+      // is needed.
+      //
       let hue = Math.floor(360*idx / (W*H)).toString();
       let lit = '55%';
       let crm = '0.35';
-      clr = 'oklch(' + [ lit,crm,hue ].join(" ") + ')';
+      clr = 'oklch(' + [ lit,crm,hue ].join(",") + ')';
+
+
+      let sat = "95%";
+      lit = '35%';
+      clr = "hsl(" + [ hue,sat,lit ].join(",") + ")";
     }
 
+    info.line[idx-1].fill = clr;
     info.line[idx-1].stroke = clr;
   }
 
+  two.width = W*info.S.x*1.1;
+  two.height = H*info.S.y*1.1;
+
   two.update();
+  two.render();
   info.svg = info.container.innerHTML;
 }
 
@@ -152,7 +199,8 @@ function init() {
       H = info.default.h;
 
   info.container = document.getElementById("gilbert_container");
-  info.two = new Two().appendTo(info.container);
+  //info.two = new Two().appendTo(info.container);
+  info.two = new Two({ type: Two.Types.svg }).appendTo(info.container);
 
   update_wh(W,H);
 }

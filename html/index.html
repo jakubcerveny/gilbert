@@ -14,49 +14,73 @@
   <body>
 
     <div class='container' style='margin-top:1em;'>
+
+      <div id='placeholder'></div>
+
       <div class='row'>
 
-        <div style='display:block;'  class='row'>
-
-          <div class='three columns'>
-            width <input id='ui_width' type='number' style='width:4em;' onchange='update_num();' oninput='update_num();'>
-          </div>
-
-          <div class='three columns'>
-            height <input id='ui_height' type='number' style='width:4em;' onchange='update_num();' oninput='update_num();'>
-          </div>
-
-          <div class='two columns'>
-            <select id='ui_preset' onchange='update_preset();'>
-              <option value='custom'>custom</option>
-              <option value='55x31'>55x31</option>
-              <option value='100x63'>100x63</option>
-              <option value='15x12'>15x12</option>
-            </select>
-          </div>
-
-          <div class='two columns'>
-            <a id='ui_svg' class='button' onclick='console.log("click");'  >SVG</a>
-          </div>
-
-          <div class='two columns'>
-            <a id='ui_color' class='button' onclick='update_color();'  >color/bw</a>
-          </div>
-
+        <div class='three columns'>
+          W
+          <input id='ui_width' type='number' style='padding:6px 6px; width:4em;' onchange='update_num();' oninput='update_num();'>
         </div>
 
-        <div class='container'>
-          <div id='gilbert_container'></div>
+        <div class='three columns'>
+          <select id='ui_preset' onchange='update_preset();' style='padding:6px 6px;'>
+            <option value='custom'>custom</option>
+            <option value='55x31'>55x31</option>
+            <option value='100x63'>100x63</option>
+            <option value='15x12'>15x12</option>
+          </select>
         </div>
 
+        <div class='three columns'>
+          <a id='ui_svg' class='button' onclick='dl_svg();' style='padding:0 10px;'  >
+
+          <svg xmlns="http://www.w3.org/2000/svg" width='15' height='15' opacity='0.8' viewBox="0 0 120 120">
+            <path d="M48.732 69.783L91.04 27.476l11.74 11.74-42.308 42.31z"/>
+            <path d="M51 3.424h19.054v60.21H51z"/>
+            <path d="M60.543 81.572L18.22 39.282l11.72-11.74L72.27 69.85zM9 99.575h103v17H9z"/>
+            <path d="M5.5 68.576h17v48h-17zm92 0h17v48h-17z"/>
+          </svg>
+
+            SVG</a>
+        </div>
+
+        <div class='three columns'>
+          &nbsp;
+        </div>
 
       </div>
+
+      <div class='row'>
+
+        <div class='three columns' >
+          H
+          <input id='ui_height' type='number' style='padding:6px 6px; width:4em;' onchange='update_num();' oninput='update_num();'>
+        </div>
+
+        <div class='three columns' >
+          &nbsp;
+        </div>
+
+        <div class='two columns'>
+          <a id='ui_color' class='button' onclick='update_color();' style='padding:0 10px;' >rgb/bw</a>
+        </div>
+
+        <div class='three columns'>
+          &nbsp;
+        </div>
+
+      </div>
+
+
+      <div class='row'>
+        <div id='gilbert_container'></div>
+      </div>
+
     </div>
-
-
 
     <script defer='defer' src='script.js'></script>
   </body>
-
 </html>
 
