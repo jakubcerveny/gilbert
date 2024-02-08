@@ -76,6 +76,9 @@ function update_preset() {
     let _w = parseInt(tok[0]);
     let _h = parseInt(tok[1]);
 
+    if (isNaN(_w)) { _w = 1; }
+    if (isNaN(_h)) { _h = 1; }
+
     if (_w < 1) { _w = 1; }
     if (_h < 1) { _h = 1; }
 
@@ -88,6 +91,9 @@ function update_preset() {
 
   let _w = parseInt(ui_w.value);
   let _h = parseInt(ui_h.value);
+
+  if (isNaN(_w)) { _w = 1; }
+  if (isNaN(_h)) { _h = 1; }
 
   if (_w < 1) { _w = 1; }
   if (_h < 1) { _h = 1; }
@@ -102,6 +108,9 @@ function update_num() {
 
   let _w = parseInt(ui_w.value);
   let _h = parseInt(ui_h.value);
+
+  if (isNaN(_w)) { _w = 1; }
+  if (isNaN(_h)) { _h = 1; }
 
   if (_w < 1) { _w = 1; }
   if (_h < 1) { _h = 1; }
