@@ -23,10 +23,7 @@ def gilbertxy2d(x,y,w,h):
     index position on the gilbert curve.
     """
 
-    if w >= h:
-        return gilbertxy2d_r(0, x,y, 0,0, w,0, 0,h)
-    return gilbertxy2d_r(0, x,y, 0,0, 0,h, w,0)
-
+    return gilbertxy2d_r(0, x,y, 0,0, w,0, 0,h)
 
 def gilbertd2xy(idx,w,h):
     """
@@ -35,9 +32,7 @@ def gilbertd2xy(idx,w,h):
     its 2D (x,y) coordinate.
     """
 
-    if w >= h:
-        return gilbertd2xy_r(idx,0, 0,0, w,0, 0,h)
-    return gilbertd2xy_r(idx,0, 0,0, 0,h, w,0)
+    return gilbertd2xy_r(idx,0, 0,0, w,0, 0,h)
 
 
 def sgn(x):
@@ -87,7 +82,6 @@ def gilbertd2xy_r( dst_idx, cur_idx, x,y, ax,ay, bx,by ):
             # prefer even steps
             (ax2, ay2) = (ax2 + dax, ay2 + day)
 
-
         # long case: split in two parts only
         nxt_idx = cur_idx + abs((ax2 + ay2)*(bx + by))
         if (cur_idx <= dst_idx) and (dst_idx < nxt_idx):
@@ -96,26 +90,27 @@ def gilbertd2xy_r( dst_idx, cur_idx, x,y, ax,ay, bx,by ):
 
         return gilbertd2xy_r(dst_idx, cur_idx, x+ax2, y+ay2, ax-ax2, ay-ay2, bx, by)
 
-    if (h2 % 2) and (h > 2):
-        # prefer even steps
-        (bx2, by2) = (bx2 + dbx, by2 + dby)
+    else:
+        if (h2 % 2) and (h > 2):
+            # prefer even steps
+            (bx2, by2) = (bx2 + dbx, by2 + dby)
 
-    # standard case: one step up, one long horizontal, one step down
-    nxt_idx = cur_idx + abs((bx2 + by2)*(ax2 + ay2))
-    if (cur_idx <= dst_idx) and (dst_idx < nxt_idx):
-        return gilbertd2xy_r(dst_idx, cur_idx, x,y, bx2,by2, ax2,ay2)
-    cur_idx = nxt_idx
+        # standard case: one step up, one long horizontal, one step down
+        nxt_idx = cur_idx + abs((bx2 + by2)*(ax2 + ay2))
+        if (cur_idx <= dst_idx) and (dst_idx < nxt_idx):
+            return gilbertd2xy_r(dst_idx, cur_idx, x,y, bx2,by2, ax2,ay2)
+        cur_idx = nxt_idx
 
-    nxt_idx = cur_idx + abs((ax+ay)*((bx-bx2) + (by-by2)))
-    if (cur_idx <= dst_idx) and (dst_idx < nxt_idx):
-        return gilbertd2xy_r(dst_idx, cur_idx, x+bx2,y+by2, ax,ay, bx-bx2,by-by2)
-    cur_idx = nxt_idx
+        nxt_idx = cur_idx + abs((ax+ay)*((bx-bx2) + (by-by2)))
+        if (cur_idx <= dst_idx) and (dst_idx < nxt_idx):
+            return gilbertd2xy_r(dst_idx, cur_idx, x+bx2,y+by2, ax,ay, bx-bx2,by-by2)
+        cur_idx = nxt_idx
 
-    return gilbertd2xy_r(dst_idx, cur_idx,
-                   x+(ax-dax)+(bx2-dbx),
-                   y+(ay-day)+(by2-dby),
-                   -bx2, -by2,
-                   -(ax-ax2), -(ay-ay2))
+        return gilbertd2xy_r(dst_idx, cur_idx,
+                       x+(ax-dax)+(bx2-dbx),
+                       y+(ay-day)+(by2-dby),
+                       -bx2, -by2,
+                       -(ax-ax2), -(ay-ay2))
 
 def gilbertxy2d_r( cur_idx, x_dst,y_dst, x,y, ax,ay, bx,by ):
 
@@ -128,12 +123,15 @@ def gilbertxy2d_r( cur_idx, x_dst,y_dst, x,y, ax,ay, bx,by ):
     dx = dax+dbx
     dy = day+dby
 
+    # if either da[xy] and db[xy] are both non-zero,
+    # we can use either one as the representative to
+    # increment the index count.
     if h == 1:
         if (dax==0): return cur_idx + (dy*(y_dst-y))
         return cur_idx + (dx*(x_dst-x))
 
     if w == 1:
-        if (dbx==0): return cur_idx + (dy*(y_dst-y))
+        if (dax==0): return cur_idx + (dy*(y_dst-y))
         return cur_idx + (dx*(x_dst-x))
 
     (ax2, ay2) = (ax//2, ay//2)
