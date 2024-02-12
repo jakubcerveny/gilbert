@@ -1,8 +1,7 @@
 #!/bin/bash
 #
 # SPDX-License-Identifier: BSD-2-Clause
-# Copyright (c) 2018 Jakub Červený
-#
+# Copyright (c) 2018 abetusk
 
 
 ln -f -s ../gilbert2d.py .

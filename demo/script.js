@@ -8,6 +8,7 @@ var info = {
   "T": { "x": 10, "y": 10 },
   "S": { "x": 10, "y": 10 },
   "color": "color",
+  "reverse_y": true,
   "two": null,
   "line": [],
   "two": null,
@@ -127,6 +128,8 @@ function draw_curve() {
   let S = info.S;
   let T = info.T;
 
+  let flip = info.reverse_y;
+
   //two.clear();
 
   let N = (W*H);
@@ -155,6 +158,11 @@ function draw_curve() {
   for (let idx=1; idx<(W*H); idx++) {
     let q = gilbert.d2xy( idx-1, W, H );
     let p = gilbert.d2xy( idx, W, H );
+
+    if (flip) {
+      p.y = H - p.y;
+      q.y = H - q.y;
+    }
 
     q.x *= S.x; q.y *= S.y;
     p.x *= S.x; p.y *= S.y;

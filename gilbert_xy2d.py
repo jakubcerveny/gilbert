@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: BSD-2-Clause
 # Copyright (c) 2024 abetusk
 
-def gilbert_xy2d(x,y,w,h):
+def gilbert_xy2d(x, y, w, h):
     """
     Generalized Hilbert ('gilbert') space-filling curve for arbitrary-sized
     2D rectangular grids. Takes a discrete 2D coordinate and maps it to the
@@ -18,25 +18,25 @@ def sgn(x):
     return -1 if x < 0 else (1 if x > 0 else 0)
 
 
-def inbounds(x,y, x_s,y_s, ax,ay, bx,by):
+def in_bounds(x, y, x_s, y_s, ax, ay, bx, by):
 
-    dx = ax+bx
-    dy = ay+by
+    dx = ax + bx
+    dy = ay + by
 
-    if dx<0:
-        if (x>x_s) or (x<=(x_s+dx)): return False
+    if dx < 0:
+        if (x > x_s) or (x <= (x_s + dx)): return False
     else:
-        if (x<x_s) or (x>=(x_s+dx)): return False
+        if (x < x_s) or (x >= (x_s + dx)): return False
 
-    if dy<0:
-        if (y>y_s) or (y<=(y_s+dy)): return False
+    if dy < 0:
+        if (y > y_s) or (y <= (y_s + dy)): return False
     else:
-        if (y<y_s) or (y>=(y_s+dy)): return False
+        if (y < y_s) or (y >= (y_s + dy)): return False
 
     return True
 
 
-def gilbert_xy2d_r( cur_idx, x_dst,y_dst, x,y, ax,ay, bx,by ):
+def gilbert_xy2d_r(cur_idx, x_dst, y_dst, x, y, ax, ay, bx, by):
 
     w = abs(ax + ay)
     h = abs(bx + by)
@@ -44,16 +44,16 @@ def gilbert_xy2d_r( cur_idx, x_dst,y_dst, x,y, ax,ay, bx,by ):
     (dax, day) = (sgn(ax), sgn(ay)) # unit major direction
     (dbx, dby) = (sgn(bx), sgn(by)) # unit orthogonal direction
 
-    dx = dax+dbx
-    dy = day+dby
+    dx = dax + dbx
+    dy = day + dby
 
     if h == 1:
-        if (dax==0): return cur_idx + (dy*(y_dst-y))
-        return cur_idx + (dx*(x_dst-x))
+        if (dax==0): return cur_idx + (dy*(y_dst - y))
+        return cur_idx + (dx*(x_dst - x))
 
     if w == 1:
-        if (dbx==0): return cur_idx + (dy*(y_dst-y))
-        return cur_idx + (dx*(x_dst-x))
+        if (dbx==0): return cur_idx + (dy*(y_dst - y))
+        return cur_idx + (dx*(x_dst - x))
 
     (ax2, ay2) = (ax//2, ay//2)
     (bx2, by2) = (bx//2, by//2)
@@ -66,7 +66,7 @@ def gilbert_xy2d_r( cur_idx, x_dst,y_dst, x,y, ax,ay, bx,by ):
             # prefer even steps
             (ax2, ay2) = (ax2 + dax, ay2 + day)
 
-        if inbounds( x_dst, y_dst, x,y, ax2,ay2, bx,by ):
+        if in_bounds(x_dst, y_dst, x, y, ax2, ay2, bx, by):
             return gilbert_xy2d_r(cur_idx, x_dst, y_dst, x, y, ax2, ay2, bx, by)
 
         cur_idx += abs((ax2 + ay2)*(bx + by))
@@ -78,19 +78,19 @@ def gilbert_xy2d_r( cur_idx, x_dst,y_dst, x,y, ax,ay, bx,by ):
             (bx2, by2) = (bx2 + dbx, by2 + dby)
 
         # standard case: one step up, one long horizontal, one step down
-        if inbounds( x_dst,y_dst, x,y, bx2,by2, ax2,ay2 ):
+        if in_bounds(x_dst, y_dst, x, y, bx2, by2, ax2, ay2):
             return gilbert_xy2d_r(cur_idx, x_dst,y_dst, x,y, bx2,by2, ax2,ay2)
         cur_idx += abs((bx2 + by2)*(ax2 + ay2))
 
-        if inbounds( x_dst,y_dst, x+bx2, y+by2, ax, ay, bx-bx2, by-by2):
+        if in_bounds(x_dst, y_dst, x+bx2, y+by2, ax, ay, bx-bx2, by-by2):
             return gilbert_xy2d_r(cur_idx, x_dst,y_dst, x+bx2,y+by2, ax,ay, bx-bx2,by-by2)
-        cur_idx += abs((ax+ay)*((bx-bx2) + (by-by2)))
+        cur_idx += abs((ax + ay)*((bx - bx2) + (by - by2)))
 
         return gilbert_xy2d_r(cur_idx, x_dst,y_dst,
-                       x+(ax-dax)+(bx2-dbx),
-                       y+(ay-day)+(by2-dby),
-                       -bx2, -by2,
-                       -(ax-ax2), -(ay-ay2))
+                              x+(ax-dax)+(bx2-dbx),
+                              y+(ay-day)+(by2-dby),
+                              -bx2, -by2,
+                              -(ax-ax2), -(ay-ay2))
 
 if __name__ == "__main__":
 

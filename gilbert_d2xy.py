@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: BSD-2-Clause
 # Copyright (c) 2024 abetusk
 
-def gilbert_d2xy(idx,w,h):
+def gilbert_d2xy(idx, w, h):
     """
     Generalized Hilbert ('gilbert') space-filling curve for arbitrary-sized
     2D rectangular grids. Takes a position along the gilbert curve and returns
@@ -13,30 +13,10 @@ def gilbert_d2xy(idx,w,h):
         return gilbert_d2xy_r(idx,0, 0,0, w,0, 0,h)
     return gilbert_d2xy_r(idx,0, 0,0, 0,h, w,0)
 
-
 def sgn(x):
     return -1 if x < 0 else (1 if x > 0 else 0)
 
-
-def inbounds(x,y, x_s,y_s, ax,ay, bx,by):
-
-    dx = ax+bx
-    dy = ay+by
-
-    if dx<0:
-        if (x>x_s) or (x<=(x_s+dx)): return False
-    else:
-        if (x<x_s) or (x>=(x_s+dx)): return False
-
-    if dy<0:
-        if (y>y_s) or (y<=(y_s+dy)): return False
-    else:
-        if (y<y_s) or (y>=(y_s+dy)): return False
-
-    return True
-
-
-def gilbert_d2xy_r( dst_idx, cur_idx, x,y, ax,ay, bx,by ):
+def gilbert_d2xy_r(dst_idx, cur_idx, x,y, ax,ay, bx,by):
 
     w = abs(ax + ay)
     h = abs(bx + by)
@@ -44,8 +24,8 @@ def gilbert_d2xy_r( dst_idx, cur_idx, x,y, ax,ay, bx,by ):
     (dax, day) = (sgn(ax), sgn(ay)) # unit major direction
     (dbx, dby) = (sgn(bx), sgn(by)) # unit orthogonal direction
 
-    dx = dax+dbx
-    dy = day+dby
+    dx = dax + dbx
+    dy = day + dby
     di = dst_idx - cur_idx
 
     if h == 1: return (x + dax*di, y + day*di)
@@ -81,16 +61,16 @@ def gilbert_d2xy_r( dst_idx, cur_idx, x,y, ax,ay, bx,by ):
         return gilbert_d2xy_r(dst_idx, cur_idx, x,y, bx2,by2, ax2,ay2)
     cur_idx = nxt_idx
 
-    nxt_idx = cur_idx + abs((ax+ay)*((bx-bx2) + (by-by2)))
+    nxt_idx = cur_idx + abs((ax + ay)*((bx - bx2) + (by - by2)))
     if (cur_idx <= dst_idx) and (dst_idx < nxt_idx):
-        return gilbert_d2xy_r(dst_idx, cur_idx, x+bx2,y+by2, ax,ay, bx-bx2,by-by2)
+        return gilbert_d2xy_r(dst_idx, cur_idx, x+bx2, y+by2, ax,ay, bx-bx2,by-by2)
     cur_idx = nxt_idx
 
     return gilbert_d2xy_r(dst_idx, cur_idx,
-                   x+(ax-dax)+(bx2-dbx),
-                   y+(ay-day)+(by2-dby),
-                   -bx2, -by2,
-                   -(ax-ax2), -(ay-ay2))
+                          x+(ax-dax)+(bx2-dbx),
+                          y+(ay-day)+(by2-dby),
+                          -bx2, -by2,
+                          -(ax-ax2), -(ay-ay2))
 
 if __name__ == "__main__":
 
