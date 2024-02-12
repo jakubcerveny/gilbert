@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Gilbert Curve</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <script type='text/javascript' src='gilbert.js'></script>
+  <script type='text/javascript' src='two.js'></script>
+
+
+
+  <link rel="stylesheet" href="normalize.css">
+  <link rel="stylesheet" href="skeleton.css">
+
+</head>
+
+  <body>
+    <div class='container' style='margin-top:1em; text-align:center;'>
+
+      <h4>Gilbert Curve
+          <a class='u-pull-right' href='https://github.com/jakubcerveny/gilbert'>
+          <svg xmlns="http://www.w3.org/2000/svg" width='15' height='15' opacity='0.5' version="1" viewBox="0 0 99.083 100">
+            <path d="M49.54 0C22.2-.018.026 22.375 0 49.974.025 77.62 22.198 100.01 49.54 100c27.355.01 49.524-22.38 49.543-50.026C99.063 22.374 76.893-.018 49.54 0zm0 88.48c-21.04 0-38.096-17.23-38.074-38.507C11.443 28.74 28.5 11.513 49.54 11.52c21.05-.008 38.11 17.222 38.132 38.454C87.65 71.25 70.59 88.48 49.542 88.48z"/>
+            <g transform="translate(23.5,23) scale(6.5)">
+              <path d="M 2.99 0 h 2.02 v 5.47 H 2.99 z m 0 6.39 h 2.02 V 8 H 2.99 z"/>
+            </g>
+          </svg>
+        </a>
+      </h4>
+
+    </div>
+
+    <div class='container' style='margin-top:1em;'>
+
+
+      <div class='row' >
+        <div class='six columns'>
+          W <input id='ui_width' type='number' onchange='update_num();' oninput='update_num();' onclick='this.select();' >
+        </div>
+
+        <div class='six columns'>
+          H <input id='ui_height' type='number' oninput='update_num();' onclick='this.select();' >
+        </div>
+      </div>
+
+      <div class='row' style='height:6em;'>
+        <div class='six columns'>
+
+          <select id='ui_preset' onchange='update_preset();' >
+            <option value='custom'>custom</option>
+            <option value='55x31'>55x31</option>
+            <option value='100x63'>100x63</option>
+            <option value='15x12'>15x12</option>
+          </select>
+
+        </div>
+
+        <div class='six columns'>
+          <a id='ui_color' class='button' onclick='update_color();'  >rgb/bw</a>
+        </div>
+
+      </div>
+
+      <div class='row' >
+        <div class='twelve columns'>
+
+          <a id='ui_svg' class='button' onclick='dl_svg();'  >
+            <svg xmlns="http://www.w3.org/2000/svg" width='15' height='15' opacity='0.8' viewBox="0 0 120 120">
+              <path d="M48.732 69.783L91.04 27.476l11.74 11.74-42.308 42.31z"/>
+              <path d="M51 3.424h19.054v60.21H51z"/>
+              <path d="M60.543 81.572L18.22 39.282l11.72-11.74L72.27 69.85zM9 99.575h103v17H9z"/>
+              <path d="M5.5 68.576h17v48h-17zm92 0h17v48h-17z"/>
+            </svg>
+            SVG</a>
+
+        </div>
+      </div>
+
+    </div>
+
+    <div class='container'>
+      <div class='row'>
+        <div id='gilbert_container'></div>
+      </div>
+    </div>
+
+
+
+      <!--
+      <div class='row' style='height:6em;'>
+        <div class='four columns'>
+          W <input id='ui_width' type='number' style='width:80%;' onchange='update_num();' oninput='update_num();'>
+        </div>
+
+        <div class='four columns'>
+          <select id='ui_preset' onchange='update_preset();' >
+            <option value='custom'>custom</option>
+            <option value='55x31'>55x31</option>
+            <option value='100x63'>100x63</option>
+            <option value='15x12'>15x12</option>
+          </select>
+        </div>
+
+        <div class='four columns'>
+          <a id='ui_svg' class='button' onclick='dl_svg();'  >
+
+          <svg xmlns="http://www.w3.org/2000/svg" width='15' height='15' opacity='0.8' viewBox="0 0 120 120">
+            <path d="M48.732 69.783L91.04 27.476l11.74 11.74-42.308 42.31z"/>
+            <path d="M51 3.424h19.054v60.21H51z"/>
+            <path d="M60.543 81.572L18.22 39.282l11.72-11.74L72.27 69.85zM9 99.575h103v17H9z"/>
+            <path d="M5.5 68.576h17v48h-17zm92 0h17v48h-17z"/>
+          </svg>
+
+            SVG</a>
+        </div>
+
+      </div>
+
+      <div class='row'>
+        <div class='four columns' >
+          H
+          <input id='ui_height' type='number' style='width:80%;'onchange='update_num();' oninput='update_num();'>
+        </div>
+
+        <div class='four columns' >
+          &nbsp;
+        </div>
+
+        <div class='four columns'>
+          <a id='ui_color' class='button' onclick='update_color();'  >rgb/bw</a>
+        </div>
+
+      </div>
+      -->
+
+
+    <script defer='defer' src='script.js'></script>
+  </body>
+</html>
+

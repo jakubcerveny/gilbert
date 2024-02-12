@@ -1,0 +1,8 @@
+
+# ignore binary
+gilbert
+*~
+*.swp
+
+.*
+
