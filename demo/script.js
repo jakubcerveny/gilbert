@@ -203,7 +203,7 @@ function draw_curve() {
   }
 
   two.width = W*info.S.x*1.1;
-  two.height = H*info.S.y*1.1;
+  two.height = H*info.S.y*2;
 
   two.update();
   two.render();
