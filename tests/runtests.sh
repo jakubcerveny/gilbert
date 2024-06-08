@@ -159,3 +159,6 @@ gilbert_cmp2 $x $y
 x=7 ; y=6 ; z=4
 gilbert_cmp3 $x $y $z
 
+x=490 ; y=490
+gilbert_cmp2 $x $y
+
