@@ -175,17 +175,12 @@ int gilbert_d2xy_r(int dst_idx, int cur_idx,
                    int *xres, int *yres,
                    int ax,int ay,
                    int bx,int by ) {
-  static int max_iter = 0;
-
   int nxt_idx;
   int w, h, x, y,
       dax, day,
       dbx, dby,
       di;
   int ax2, ay2, bx2, by2, w2, h2;
-
-  if (max_iter > 100000) { return -1; }
-  max_iter++;
 
   w = abs(ax + ay);
   h = abs(bx + by);
@@ -891,7 +886,7 @@ int main(int argc, char **argv) {
   }
 
   strncpy(buf, argv[1], 1023);
-  buf[1024]='\0';
+  buf[1023]='\0';
 
   w = atoi(argv[2]);
   h = atoi(argv[3]);
