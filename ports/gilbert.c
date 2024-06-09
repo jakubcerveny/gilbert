@@ -211,16 +211,16 @@ int gilbert_d2xy_r(int dst_idx, int cur_idx,
   }
 
   // floor function
-  ax2 = (int)floor((double)ax/2.0);
-  ay2 = (int)floor((double)ay/2.0);
-  bx2 = (int)floor((double)bx/2.0);
-  by2 = (int)floor((double)by/2.0);
+  ax2 = ax >> 1;
+  ay2 = ay >> 1;
+  bx2 = bx >> 1;
+  by2 = by >> 1;
 
   w2 = abs(ax2 + ay2);
   h2 = abs(bx2 + by2);
 
   if ((2*w) > (3*h)) {
-    if ((w2 % 2) && (w > 2)) {
+    if ((w2 & 1) && (w > 2)) {
       // prefer even steps
       ax2 += dax;
       ay2 += day;
@@ -240,7 +240,7 @@ int gilbert_d2xy_r(int dst_idx, int cur_idx,
     return gilbert_d2xy_r(dst_idx, cur_idx, xres, yres, ax-ax2, ay-ay2, bx, by);
   }
 
-  if ((h2 % 2) && (h > 2)) {
+  if ((h2 & 1) && (h > 2)) {
     // prefer even steps
     bx2 += dbx;
     by2 += dby;
@@ -305,16 +305,16 @@ int gilbert_xy2d_r(int cur_idx,
     return cur_idx + (dx*(x_dst - x));
   }
 
-  ax2 = (int)floor((double)ax/2.0);
-  ay2 = (int)floor((double)ay/2.0);
-  bx2 = (int)floor((double)bx/2.0);
-  by2 = (int)floor((double)by/2.0);
+  ax2 = ax >> 1;
+  ay2 = ay >> 1;
+  bx2 = bx >> 1;
+  by2 = by >> 1;
 
   w2 = abs(ax2 + ay2);
   h2 = abs(bx2 + by2);
 
   if ((2*w) > (3*h)) {
-    if ((w2 % 2) && (w > 2)) {
+    if ((w2 & 1) && (w > 2)) {
       // prefer even steps
       ax2 += dax;
       ay2 += day;
@@ -328,7 +328,7 @@ int gilbert_xy2d_r(int cur_idx,
     return gilbert_xy2d_r(cur_idx, x_dst, y_dst, x+ax2, y+ay2, ax-ax2, ay-ay2, bx, by);
   }
 
-  if ((h2 % 2) && (h > 2)) {
+  if ((h2 & 1) && (h > 2)) {
     // prefer even steps
     bx2 += dbx;
     by2 += dby;
@@ -412,26 +412,26 @@ int gilbert_d2xyz_r(int dst_idx, int cur_idx,
     return 0;
   }
 
-  ax2 = (int)floor((double)ax/2.0);
-  ay2 = (int)floor((double)ay/2.0);
-  az2 = (int)floor((double)az/2.0);
+  ax2 = ax >> 1;
+  ay2 = ay >> 1;
+  az2 = az >> 1;
 
-  bx2 = (int)floor((double)bx/2.0);
-  by2 = (int)floor((double)by/2.0);
-  bz2 = (int)floor((double)bz/2.0);
+  bx2 = bx >> 1;
+  by2 = by >> 1;
+  bz2 = bz >> 1;
 
-  cx2 = (int)floor((double)cx/2.0);
-  cy2 = (int)floor((double)cy/2.0);
-  cz2 = (int)floor((double)cz/2.0);
+  cx2 = cx >> 1;
+  cy2 = cy >> 1;
+  cz2 = cz >> 1;
 
   w2 = abs(ax2 + ay2 + az2);
   h2 = abs(bx2 + by2 + bz2);
   d2 = abs(cx2 + cy2 + cz2);
 
   // prefer even steps
-  if ((w2 % 2) && (w > 2)) { ax2 += dax; ay2 += day; az2 += daz; }
-  if ((h2 % 2) && (h > 2)) { bx2 += dbx; by2 += dby; bz2 += dbz; }
-  if ((d2 % 2) && (d > 2)) { cx2 += dcx; cy2 += dcy; cz2 += dcz; }
+  if ((w2 & 1) && (w > 2)) { ax2 += dax; ay2 += day; az2 += daz; }
+  if ((h2 & 1) && (h > 2)) { bx2 += dbx; by2 += dby; bz2 += dbz; }
+  if ((d2 & 1) && (d > 2)) { cx2 += dcx; cy2 += dcy; cz2 += dcz; }
 
   // wide case, split in w only
   if (((2*w) > (3*h)) && ((2*w) > (3*d))) {
@@ -642,36 +642,36 @@ int gilbert_xyz2d_r(int cur_idx,
     return cur_idx + (dcx*(x_dst - x)) + (dcy*(y_dst - y)) + (dcz*(z_dst - z));
   }
 
-  ax2 = (int)floor((double)ax/2.0);
-  ay2 = (int)floor((double)ay/2.0);
-  az2 = (int)floor((double)az/2.0);
+  ax2 = ax >> 1;
+  ay2 = ay >> 1;
+  az2 = az >> 1;
 
-  bx2 = (int)floor((double)bx/2.0);
-  by2 = (int)floor((double)by/2.0);
-  bz2 = (int)floor((double)bz/2.0);
+  bx2 = bx >> 1;
+  by2 = by >> 1;
+  bz2 = bz >> 1;
 
-  cx2 = (int)floor((double)cx/2.0);
-  cy2 = (int)floor((double)cy/2.0);
-  cz2 = (int)floor((double)cz/2.0);
+  cx2 = cx >> 1;
+  cy2 = cy >> 1;
+  cz2 = cz >> 1;
 
   w2 = abs(ax2 + ay2 + az2);
   h2 = abs(bx2 + by2 + bz2);
   d2 = abs(cx2 + cy2 + cz2);
 
   // prefer even steps
-  if ((w2 % 2) && (w > 2)) {
+  if ((w2 & 1) && (w > 2)) {
     ax2 += dax;
     ay2 += day;
     az2 += daz;
   }
 
-  if ((h2 % 2) && (h > 2)) {
+  if ((h2 & 1) && (h > 2)) {
     bx2 += dbx;
     by2 += dby;
     bz2 += dbz;
   }
 
-  if ((d2 % 2) && (d > 2)) {
+  if ((d2 & 1) && (d > 2)) {
     cx2 += dcx;
     cy2 += dcy;
     cz2 += dcz;
