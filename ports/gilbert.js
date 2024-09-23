@@ -585,11 +585,11 @@ function gilbert_d2xyz_r(dst_idx, cur_idx, p, a, b, c) {
 
 if (typeof module !== "undefined") {
 
-  module.exports["d2xy"] = gilbert_xy2d;
-  module.exports["xy2d"] = gilbert_d2xy;
+  module.exports["d2xy"] = gilbert_d2xy;
+  module.exports["xy2d"] = gilbert_xy2d;
 
-  module.exports["d2xyz"] = gilbert_xyz2d;
-  module.exports["xyz2d"] = gilbert_d2xyz;
+  module.exports["d2xyz"] = gilbert_d2xyz;
+  module.exports["xyz2d"] = gilbert_xyz2d;
 
   module.exports["main"] = _main;
 
