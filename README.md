@@ -64,6 +64,7 @@ curve with orthogonal steps only, as long as the width is even (100x63 shown):
 ![](https://raw.githubusercontent.com/jakubcerveny/gilbert/master/img/100x63.png)
 
 If the sizes are powers of two, a standard Hilbert curve is generated.
+
 The algorithm extends naturally to 3D (8x6x4):
 
 ![](https://raw.githubusercontent.com/jakubcerveny/gilbert/master/img/8x6x4.png)
