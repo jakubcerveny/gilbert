@@ -141,7 +141,7 @@ This provides an $O( \lg(N = W \cdot H \cdot D) )$ algorithm.
 
 ### Ports
 
-There are reference implementations for JavaScript and C in the `ports` directory.
+There are reference implementations for C, JavaScript and Rust in the `ports` directory.
 
 | Language | Program | Function | Output |
 |----------|---------|----------|--------|
@@ -153,6 +153,10 @@ There are reference implementations for JavaScript and C in the `ports` director
 | `JS`     | `gilbert.js` | `gilbert.xy2d(x,y,width,height)` | Returns index |
 | `JS`     | `gilbert.js` | `gilbert.d2xyz(idx,width,height,depth)` | Returns `{"x":x,"y":y, "z":z}` object |
 | `JS`     | `gilbert.js` | `gilbert.xyz2d(x,y,z,width,height,depth)` | Returns index |
+| `Rust`     | `gilbert.rs` | `gilbert::d2xy(idx,width,height)` | Returns `(x,y)` tuple |
+| `Rust`     | `gilbert.rs` | `gilbert::xy2d(x,y,width,height)` | Returns index |
+| `Rust`     | `gilbert.rs` | `gilbert::d2xyz(idx,width,height,depth)` | Returns `(x,y,z)` tuple |
+| `Rust`     | `gilbert.rs` | `gilbert::xyz2d(x,y,z,width,height,depth)` | Returns index |
 
 ### [Web Demo](https://jakubcerveny.github.io/gilbert/demo)
 
