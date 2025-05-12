@@ -1,0 +1,108 @@
+#!/usr/bin/python3
+#
+# To the extent possible under law, the person who associated CC0 with
+# this project has waived all copyright and related or neighboring rights
+# to this project.
+# 
+# You should have received a copy of the CC0 legalcode along with this
+# work. If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
+#
+
+
+import os
+import sys
+
+max_xyz = [-1,-1,-1]
+prv_xyz = [-1, 0, 0]
+
+VERBOSE_LEVEL = 0
+
+NOTCH_COUNT = 0
+LINE_NO = 0
+
+DUP_COUNT = 0
+dup_map = {}
+
+UNIQ_COUNT = 0
+CELL_TOTAL = 0
+
+if (len(sys.argv) > 1):
+  for arg in sys.argv[1:]:
+    if arg == "verbose":
+      VERBOSE_LEVEL += 1
+
+def _dist1(a,b):
+  s = 0
+  n = max( len(a), len(b) )
+  for idx in range( max(len(a), len(b)) ):
+    if (idx < len(a)) and (idx < len(b)):
+      s += abs(a[idx] - b[idx])
+    elif (idx < len(a)):
+      s += abs(a[idx])
+    else:
+      s += abs(b[idx])
+  return s
+
+for line in sys.stdin:
+  LINE_NO += 1
+
+  line = line.strip()
+  if len(line)==0: continue
+  if line[0] == '#': continue
+
+  cur_xyz = [0,0,0]
+
+  if (line in dup_map): DUP_COUNT += 1
+  else: UNIQ_COUNT += 1
+  dup_map[ line ] = 1
+
+  tok = line.split(" ")
+
+  if (len(tok) == 2):
+    cur_xyz[0] = int(tok[0])
+    cur_xyz[1] = int(tok[1])
+  elif (len(tok) == 3):
+    cur_xyz[0] = int(tok[0])
+    cur_xyz[1] = int(tok[1])
+    cur_xyz[2] = int(tok[2])
+  else:
+    sys.stderr.write("ERROR: expecting 2 or 3 coordinates, got" +  str(len(tok)) +  ", line:" + str(LINE_NO) +  "'" + line + "'")
+    sys.exit(-1)
+
+  max_xyz[0] = max(max_xyz[0], cur_xyz[0])
+  max_xyz[1] = max(max_xyz[1], cur_xyz[1])
+  max_xyz[2] = max(max_xyz[2], cur_xyz[2])
+
+  d = _dist1(cur_xyz, prv_xyz)
+  if (d > 1): NOTCH_COUNT += 1
+
+  prv_xyz = cur_xyz
+
+
+Nxyz = [ max_xyz[0]+1, max_xyz[1]+1, max_xyz[2]+1 ]
+
+CELL_TOTAL = Nxyz[0]*Nxyz[1]*Nxyz[2]
+parity = (((1 + (Nxyz[1] * Nxyz[2])) * Nxyz[0]) % 2)
+
+d1_count = 0
+for idx in range(3):
+  if (Nxyz[idx] == 1): d1_count += 1
+
+code = "ok"
+if ((DUP_COUNT > 0) or (NOTCH_COUNT  != parity) or (UNIQ_COUNT != CELL_TOTAL)):
+  code = "FAIL"
+
+
+if (Nxyz[0] == 1): code = "unspec"
+
+if (code == "FAIL"):
+  if (VERBOSE_LEVEL > 0):
+    sys.stderr.write("#" + str(code) + ": N[" + str(Nxyz[0]) + "x" +  str(Nxyz[1]) +  "x" + str(Nxyz[2]) +  "], notch:" +  str(NOTCH_COUNT) + \
+          ", dup:" + str(DUP_COUNT) + ", parity:" + str(parity) + ", uniq:" + str(UNIQ_COUNT) + "(/" + str(CELL_TOTAL) +  ")\n")
+  sys.exit(-1)
+else:
+  if (VERBOSE_LEVEL > 0):
+    sys.stdout.write("#" + str(code) + ": N[" + str(Nxyz[0]) + "x" +  str(Nxyz[1]) +  "x" + str(Nxyz[2]) +  "], notch:" +  str(NOTCH_COUNT) + \
+          ", dup:" + str(DUP_COUNT) + ", parity:" + str(parity) + ", uniq:" + str(UNIQ_COUNT) + "(/" + str(CELL_TOTAL) +  ")\n")
+
+sys.exit(0)
