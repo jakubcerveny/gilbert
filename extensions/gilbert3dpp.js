@@ -213,15 +213,6 @@ function d2e(_v) {
   return m*(v2+1);
 }
 
-// floor version
-//
-//function d2u_floor(v) {
-//  let v2 = Math.floor(v/2);
-//  if (v==0) { return 0; }
-//  if ((v2%2)==1) { return v2; }
-//  return v2+1;
-//}
-
 // round to zero version
 //
 function d2u(_v) {
@@ -233,14 +224,6 @@ function d2u(_v) {
   return m*(v2+1);
 }
 
-// floor version
-//
-//function dqe_floor(v,q) {
-//  let vq = Math.floor(v/q);
-//  if ((vq%2)==0) { return vq; }
-//  return vq+1;
-//}
-
 // round to zero version
 //
 function dqe(_v,q) {
@@ -251,16 +234,10 @@ function dqe(_v,q) {
   return m*(vq+1);
 }
 
-// floor version
+
+// round to zero
+// divide by q, force odd
 //
-//function dqu_floor(v,q) {
-//  let vq = Math.floor(v/q);
-//  if (v==0) { return 0; }
-//  if ((vq%2)==1) { return vq; }
-//  return vq+1;
-//}
-
-
 function dqu(_v,q) {
   let v = Math.abs(_v);
   let m = ((_v<0)? -1 : 1);
@@ -269,16 +246,6 @@ function dqu(_v,q) {
   if ((vq%2)==1) { return m*vq; }
   return m*(vq+1);
 }
-
-// floor version
-//
-//function _divq_floor(v,q) {
-// let u = [];
-//  for (let i=0; i<v.length; i++) {
-//    u.push( Math.floor(v[i] / q) );
-//  }
-//  return u;
-//}
 
 // round to zero version
 //
@@ -428,87 +395,6 @@ function _inBounds(q, p, a, b, g) {
   }
 
   return true;
-
-}
-
-//-------------------
-//         ___     __
-//   ___ _|_  |___/ /
-//  / _ `/ __// _  / 
-//  \_, /____/\_,_/  
-// /___/             
-//-------------------
-
-
-// "generalized" 2d gilbert curve
-//
-// alpha - width-like axis
-// beta - height-like axis
-//
-// Enumerate points for the 2d Gilbert curve
-// in alpha and beta axis.
-// alpha/beta can be in 3d and should work properly.
-//
-// first prototype/reference implementation, single function, print only
-//
-function g2d_p(p, alpha, beta) {
-  let a = _abs(alpha);
-  let b = _abs(beta);
-
-  let alpha2 = _div2(alpha);
-  let beta2  = _div2(beta);
-
-  let a2 = _abs(alpha2);
-  let b2 = _abs(beta2);
-
-  let d_alpha = _delta(alpha);
-  let d_beta  = _delta(beta);
-
-  if (b==1) {
-
-    let u = _clone(p);
-    for (let i=0; i<a; i++) {
-      _print(u);
-      u = _add(u, d_alpha);
-    }
-    return;
-  }
-
-  if (a==1) {
-    let u = _clone(p);
-    for (let i=0; i<b; i++) {
-      _print(u);
-      u = _add(u, d_beta);
-    }
-    return;
-  }
-
-  if ( (2*a) > (3*b) ) {
-    if ((a2%2) && (a>2)) { alpha2 = _add(alpha2, d_alpha); }
-
-
-    g2d_p(p, alpha2, beta);
-    g2d_p( _add(p, alpha2),
-           _add(alpha, _neg(alpha2)),
-           beta);
-
-    return;
-  }
-
-
-  if ((b2%2) && (b>2)) { beta2 = _add(beta2, d_beta); }
-
-  g2d_p( p,
-         beta2,
-         alpha2);
-  g2d_p( _add(p, beta2),
-         alpha,
-         _add(beta, _neg(beta2)) );
-  g2d_p( _add(p,
-              _add( _add(alpha, _neg(d_alpha) ),
-                    _add(beta2, _neg( d_beta) ) ) ),
-         _neg(beta2),
-         _add(alpha2, _neg(alpha)) );
 
 }
 
