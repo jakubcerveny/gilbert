@@ -3,7 +3,7 @@
 # To the extent possible under law, the person who associated CC0 with
 # this project has waived all copyright and related or neighboring rights
 # to this project.
-# 
+#
 # You should have received a copy of the CC0 legalcode along with this
 # work. If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
 #
@@ -31,11 +31,11 @@ ADAPT_METHOD = {
 }
 
 ###################################################################
-#    __       __               ___              __  _             
+#    __       __               ___              __  _
 #   / /  ___ / /__  ___ ____  / _/_ _____  ____/ /_(_)__  ___  ___
 #  / _ \/ -_) / _ \/ -_) __/ / _/ // / _ \/ __/ __/ / _ \/ _ \(_-<
 # /_//_/\__/_/ .__/\__/_/   /_/ \_,_/_//_/\__/\__/_/\___/_//_/___/
-#           /_/                                                   
+#           /_/
 ###################################################################
 
 
@@ -225,29 +225,36 @@ def Hilbert2x2x2_xyz2d(idx, q, p, alpha, beta, gamma):
 
 
 ###################################################################
-#    __       __               ___              __  _             
+#    __       __               ___              __  _
 #   / /  ___ / /__  ___ ____  / _/_ _____  ____/ /_(_)__  ___  ___
 #  / _ \/ -_) / _ \/ -_) __/ / _/ // / _ \/ __/ __/ / _ \/ _ \(_-<
 # /_//_/\__/_/ .__/\__/_/   /_/ \_,_/_//_/\__/\__/_/\___/_//_/___/
-#           /_/                                                   
+#           /_/
 ###################################################################
 
 
 ####################################################
-#   ______ ____           __  ____ ___    __    __ 
+#   ______ ____           __  ____ ___    __    __
 #  / ___(_) / /  ___ ____/ /_|_  // _ \__/ /___/ /_
 # / (_ / / / _ \/ -_) __/ __//_ </ // /_  __/_  __/
-# \___/_/_/_.__/\__/_/  \__/____/____/ /_/   /_/   
-#                                                  
+# \___/_/_/_.__/\__/_/  \__/____/____/ /_/   /_/
+#
 ####################################################
 
 ########################
-#  __ _ ____  _ _ _  __ 
+#  __ _ ____  _ _ _  __
 # / _` (_-< || | ' \/ _|
 # \__,_/__/\_, |_||_\__|
-#          |__/         
+#          |__/
 ########################
 
+
+############
+#  ___  __
+# / __|/  \
+# \__ \ () |
+# |___/\__/
+############
 
 def Gilbert3DS0Async(p, alpha, beta, gamma):
     alpha2  = v_div2(alpha)
@@ -262,6 +269,13 @@ def Gilbert3DS0Async(p, alpha, beta, gamma):
     yield from Gilbert3DAsync( p, alpha2, beta, gamma )
     yield from Gilbert3DAsync( v_add(p, alpha2),
                                v_add(alpha, v_neg(alpha2)), beta, gamma )
+
+#########
+#  ___ _
+# / __/ |
+# \__ \ |
+# |___/_|
+#########
 
 def Gilbert3DS1Async(p, alpha, beta, gamma):
     alpha2 = v_div2(alpha)
@@ -299,6 +313,12 @@ def Gilbert3DS1Async(p, alpha, beta, gamma):
                                v_neg( v_add(alpha, v_neg(alpha2)) ),
                                beta )
 
+###########
+#  ___ ___
+# / __|_  )
+# \__ \/ /
+# |___/___|
+###########
 
 def Gilbert3DS2Async(p, alpha, beta, gamma):
     alpha2 = v_div2(alpha)
@@ -336,7 +356,12 @@ def Gilbert3DS2Async(p, alpha, beta, gamma):
                                gamma,
                                v_neg( v_add(alpha, v_neg(alpha2)) ) )
 
-
+#############
+#     _  __
+#  _ | |/  \
+# | || | () |
+#  \__/ \__/
+#############
 
 def Gilbert3DJ0Async(p, alpha, beta, gamma):
     alpha2 = v_div2(alpha)
@@ -375,6 +400,12 @@ def Gilbert3DJ0Async(p, alpha, beta, gamma):
     yield from Gilbert3DAsync( v_add( p, v_add( v_add(alpha, v_neg(d_alpha)), v_add(beta2, v_neg(d_beta)) ) ),
                                v_neg(beta2), gamma2, v_neg( v_add(alpha, v_neg(alpha2)) ) )
 
+##########
+#     _ _
+#  _ | / |
+# | || | |
+#  \__/|_|
+##########
 
 def Gilbert3DJ1Async(p, alpha, beta, gamma):
     alpha2 = v_div2(alpha)
@@ -415,6 +446,12 @@ def Gilbert3DJ1Async(p, alpha, beta, gamma):
     yield from Gilbert3DAsync( v_add( p, v_add( v_add(alpha, v_neg(d_alpha)), v_add(gamma2, v_neg(d_gamma)) ) ),
                                v_neg(gamma2), v_neg(v_add(alpha, v_neg(alpha2))), beta2 )
 
+############
+#     _ ___
+#  _ | |_  )
+# | || |/ /
+#  \__//___|
+############
 
 def Gilbert3DJ2Async(p, alpha, beta, gamma):
     alpha2  = v_div2(alpha)
@@ -451,6 +488,13 @@ def Gilbert3DJ2Async(p, alpha, beta, gamma):
 
     yield from Gilbert3DAsync( v_add( p, v_add( v_add(alpha, v_neg(d_alpha)), v_add( gamma2, v_neg(d_gamma) ) ) ),
                                v_neg(gamma2), v_neg(v_add(alpha, v_neg(alpha2))), beta2)
+
+############
+#  _______
+# |__ /   \
+#  |_ \ |) |
+# |___/___/
+############
 
 
 def Gilbert3DAsync(p, alpha, beta, gamma):
@@ -532,20 +576,27 @@ def Gilbert3DAsync(p, alpha, beta, gamma):
     yield from Gilbert3DJ2Async(p, alpha, beta, gamma)
 
 ########################
-#  __ _ ____  _ _ _  __ 
+#  __ _ ____  _ _ _  __
 # / _` (_-< || | ' \/ _|
 # \__,_/__/\_, |_||_\__|
-#          |__/         
+#          |__/
 ########################
 
 
 ########################
-#              ___    _ 
+#              ___    _
 # __ ___  _ __|_  )__| |
 # \ \ / || |_ // // _` |
 # /_\_\\_, /__/___\__,_|
-#      |__/             
+#      |__/
 ########################
+
+############
+#  ___  __
+# / __|/  \
+# \__ \ () |
+# |___/\__/
+############
 
 def Gilbert3DS0_xyz2d( cur_idx, q, p, alpha, beta, gamma ):
     alpha2  = v_div2(alpha)
@@ -573,6 +624,12 @@ def Gilbert3DS0_xyz2d( cur_idx, q, p, alpha, beta, gamma ):
                             u,
                             v_add(alpha, v_neg(alpha2)), beta, gamma )
 
+#########
+#  ___ _
+# / __/ |
+# \__ \ |
+# |___/_|
+#########
 
 def Gilbert3DS1_xyz2d( cur_idx, q, p, alpha, beta, gamma ):
     alpha2 = v_div2(alpha)
@@ -615,6 +672,14 @@ def Gilbert3DS1_xyz2d( cur_idx, q, p, alpha, beta, gamma ):
     return Gilbert3D_xyz2d( cur_idx, q,
                             u,
                             v_neg(gamma3), v_neg(v_add(alpha, v_neg(alpha2))), beta )
+
+###########
+#  ___ ___
+# / __|_  )
+# \__ \/ /
+# |___/___|
+###########
+
 def Gilbert3DS2_xyz2d(cur_idx, q, p, alpha, beta, gamma):
     alpha2  = v_div2(alpha)
     beta3   = v_divq(beta, 3)
@@ -658,6 +723,12 @@ def Gilbert3DS2_xyz2d(cur_idx, q, p, alpha, beta, gamma):
                             u,
                             v_neg(beta3), gamma, v_neg(v_add(alpha, v_neg(alpha2))) )
 
+#############
+#     _  __
+#  _ | |/  \
+# | || | () |
+#  \__/ \__/
+#############
 
 def Gilbert3DJ0_xyz2d(cur_idx, q, p, alpha, beta, gamma):
     alpha2  = v_div2(alpha)
@@ -719,6 +790,12 @@ def Gilbert3DJ0_xyz2d(cur_idx, q, p, alpha, beta, gamma):
                             u,
                             v_neg(beta2), gamma2, v_neg( v_add(alpha, v_neg(alpha2)) ) )
 
+##########
+#     _ _
+#  _ | / |
+# | || | |
+#  \__/|_|
+##########
 
 def Gilbert3DJ1_xyz2d(cur_idx, q, p, alpha, beta, gamma):
     alpha2  = v_div2(alpha)
@@ -781,6 +858,12 @@ def Gilbert3DJ1_xyz2d(cur_idx, q, p, alpha, beta, gamma):
                             u,
                             v_neg(gamma2), v_neg(v_add(alpha, v_neg(alpha2))), beta2 )
 
+############
+#     _ ___
+#  _ | |_  )
+# | || |/ /
+#  \__//___|
+############
 
 def Gilbert3DJ2_xyz2d(cur_idx, q, p, alpha, beta, gamma):
     alpha2  = v_div2(alpha)
@@ -842,6 +925,13 @@ def Gilbert3DJ2_xyz2d(cur_idx, q, p, alpha, beta, gamma):
                             u,
                             v_neg(gamma2), v_neg(v_add(alpha, v_neg(alpha2))), beta2)
 
+#######################################
+#                 _         _    _
+#  _ __  ___ ___ | |_ ___  (_)__| |_ __
+# | '_ \/ _ (_-< |  _/ _ \ | / _` \ \ /
+# | .__/\___/__/  \__\___/ |_\__,_/_\_\
+# |_|
+#######################################
 
 def Gilbert3D_xyz2d(cur_idx, q, p, alpha, beta, gamma):
     a = abs_sum_v(alpha)
@@ -863,7 +953,7 @@ def Gilbert3D_xyz2d(cur_idx, q, p, alpha, beta, gamma):
     if (g == 1): return Gilbert2D_xyz2d(cur_idx, q, p, alpha, beta)
 
     # eccentric cases
-    # 
+    #
     if ((3*a) > (5*b)) and ((3*a) > (5*g)):
       return Gilbert3DS0_xyz2d(cur_idx, q, p, alpha, beta, gamma)
 
@@ -874,7 +964,7 @@ def Gilbert3D_xyz2d(cur_idx, q, p, alpha, beta, gamma):
         return Gilbert3DS1_xyz2d(cur_idx, q, p, alpha, beta, gamma)
 
     # bulk recursion
-    # 
+    #
     if (g0 == 0):
         return Gilbert3DJ0_xyz2d(cur_idx, q, p, alpha, beta, gamma)
 
@@ -888,21 +978,28 @@ def Gilbert3D_xyz2d(cur_idx, q, p, alpha, beta, gamma):
 
 
 ########################
-#              ___    _ 
+#              ___    _
 # __ ___  _ __|_  )__| |
 # \ \ / || |_ // // _` |
 # /_\_\\_, /__/___\__,_|
-#      |__/             
+#      |__/
 ########################
 
 
 ########################
-#     _ ___             
+#     _ ___
 #  __| |_  )_ ___  _ ___
 # / _` |/ /\ \ / || |_ /
 # \__,_/___/_\_\\_, /__|
-#               |__/    
+#               |__/
 ########################
+
+############
+#  ___  __
+# / __|/  \
+# \__ \ () |
+# |___/\__/
+############
 
 def Gilbert3DS0_d2xyz(dst_idx, cur_idx, p, alpha, beta, gamma):
 
@@ -930,6 +1027,12 @@ def Gilbert3DS0_d2xyz(dst_idx, cur_idx, p, alpha, beta, gamma):
                             v_add(p, alpha2),
                             v_add(alpha, v_neg(alpha2)), beta, gamma )
 
+#########
+#  ___ _
+# / __/ |
+# \__ \ |
+# |___/_|
+#########
 
 def Gilbert3DS1_d2xyz( dst_idx, cur_idx, p, alpha, beta, gamma ):
     alpha2 = v_div2(alpha)
@@ -970,6 +1073,13 @@ def Gilbert3DS1_d2xyz( dst_idx, cur_idx, p, alpha, beta, gamma ):
     return Gilbert3D_d2xyz( dst_idx, cur_idx,
                             v_add(p, v_add( v_add(alpha, v_neg(d_alpha)), v_add(gamma3, v_neg(d_gamma)) ) ),
                             v_neg(gamma3), v_neg(v_add(alpha, v_neg(alpha2))), beta )
+
+###########
+#  ___ ___
+# / __|_  )
+# \__ \/ /
+# |___/___|
+###########
 
 def Gilbert3DS2_d2xyz( dst_idx, cur_idx, p, alpha, beta, gamma ):
     alpha2  = v_div2(alpha)
@@ -1012,6 +1122,12 @@ def Gilbert3DS2_d2xyz( dst_idx, cur_idx, p, alpha, beta, gamma ):
                             v_add( p, v_add( v_add(alpha, v_neg(d_alpha)), v_add(beta3, v_neg(d_beta)) ) ),
                             v_neg(beta3), gamma, v_neg(v_add(alpha, v_neg(alpha2))) )
 
+#############
+#     _  __
+#  _ | |/  \
+# | || | () |
+#  \__/ \__/
+#############
 
 def Gilbert3DJ0_d2xyz(dst_idx, cur_idx, p, alpha, beta, gamma):
     alpha2  = v_div2(alpha)
@@ -1071,6 +1187,13 @@ def Gilbert3DJ0_d2xyz(dst_idx, cur_idx, p, alpha, beta, gamma):
     return Gilbert3D_d2xyz( dst_idx, cur_idx,
                             v_add( p, v_add( v_add(alpha, v_neg(d_alpha)), v_add(beta2, v_neg(d_beta)) ) ),
                             v_neg(beta2), gamma2, v_neg( v_add(alpha, v_neg(alpha2)) ) )
+
+##########
+#     _ _
+#  _ | / |
+# | || | |
+#  \__/|_|
+##########
 
 def Gilbert3DJ1_d2xyz(dst_idx, cur_idx, p, alpha, beta, gamma):
 
@@ -1132,6 +1255,12 @@ def Gilbert3DJ1_d2xyz(dst_idx, cur_idx, p, alpha, beta, gamma):
                             v_add( p, v_add( v_add(alpha, v_neg(d_alpha)), v_add(gamma2, v_neg(d_gamma)) ) ),
                             v_neg(gamma2), v_neg(v_add(alpha, v_neg(alpha2))), beta2 )
 
+############
+#     _ ___
+#  _ | |_  )
+# | || |/ /
+#  \__//___|
+############
 
 def Gilbert3DJ2_d2xyz(dst_idx, cur_idx, p, alpha, beta, gamma):
 
@@ -1193,7 +1322,13 @@ def Gilbert3DJ2_d2xyz(dst_idx, cur_idx, p, alpha, beta, gamma):
                             v_add( p, v_add( v_add(alpha, v_neg(d_alpha)), v_add( gamma2, v_neg(d_gamma) ) ) ),
                             v_neg(gamma2), v_neg(v_add(alpha, v_neg(alpha2))), beta2)
 
-
+#######################################
+#  _    _       _
+# (_)__| |_ __ | |_ ___   _ __  ___ ___
+# | / _` \ \ / |  _/ _ \ | '_ \/ _ (_-<
+# |_\__,_/_\_\  \__\___/ | .__/\___/__/
+#                        |_|
+#######################################
 
 def Gilbert3D_d2xyz( dst_idx, cur_idx, p, alpha, beta, gamma ):
     a = abs_sum_v(alpha)
@@ -1238,30 +1373,38 @@ def Gilbert3D_d2xyz( dst_idx, cur_idx, p, alpha, beta, gamma ):
 
 
 ########################
-#     _ ___             
+#     _ ___
 #  __| |_  )_ ___  _ ___
 # / _` |/ /\ \ / || |_ /
 # \__,_/___/_\_\\_, /__|
-#               |__/    
+#               |__/
 ########################
 
 
 ####################################################
-#   ______ ____           __  ____ ___    __    __ 
+#   ______ ____           __  ____ ___    __    __
 #  / ___(_) / /  ___ ____/ /_|_  // _ \__/ /___/ /_
 # / (_ / / / _ \/ -_) __/ __//_ </ // /_  __/_  __/
-# \___/_/_/_.__/\__/_/  \__/____/____/ /_/   /_/   
-#                                                  
+# \___/_/_/_.__/\__/_/  \__/____/____/ /_/   /_/
+#
 ####################################################
 
 
 ####################################################
-#   ______ ____           __  ___  ___    __    __ 
+#   ______ ____           __  ___  ___    __    __
 #  / ___(_) / /  ___ ____/ /_|_  |/ _ \__/ /___/ /_
 # / (_ / / / _ \/ -_) __/ __/ __// // /_  __/_  __/
-# \___/_/_/_.__/\__/_/  \__/____/____/ /_/   /_/   
-#                                                  
+# \___/_/_/_.__/\__/_/  \__/____/____/ /_/   /_/
+#
 ####################################################
+
+#######################################
+#                 _         _    _
+#  _ __  ___ ___ | |_ ___  (_)__| |_ __
+# | '_ \/ _ (_-< |  _/ _ \ | / _` \ \ /
+# | .__/\___/__/  \__\___/ |_\__,_/_\_\
+# |_|
+#######################################
 
 def Gilbert2D_xyz2d(cur_idx, q, p, alpha, beta):
     a = abs_sum_v(alpha)
@@ -1318,11 +1461,21 @@ def Gilbert2D_xyz2d(cur_idx, q, p, alpha, beta):
                                 v_add(beta, v_neg(beta2)) )
     cur_idx += a*(b-b2)
 
-    u = v_add(p, v_add( v_add(alpha, v_neg(d_alpha)), v_add(beta2, v_neg(d_beta)) )) 
+    u = v_add(p, v_add( v_add(alpha, v_neg(d_alpha)), v_add(beta2, v_neg(d_beta)) ))
     return Gilbert2D_xyz2d( cur_idx, q,
                             u,
                             v_neg(beta2),
                             v_add(alpha2, v_neg(alpha)) )
+
+
+
+#######################################
+#  _    _       _
+# (_)__| |_ __ | |_ ___   _ __  ___ ___
+# | / _` \ \ / |  _/ _ \ | '_ \/ _ (_-<
+# |_\__,_/_\_\  \__\___/ | .__/\___/__/
+#                        |_|
+#######################################
 
 
 def Gilbert2D_d2xyz(dst_idx, cur_idx, p, alpha, beta):
@@ -1387,6 +1540,13 @@ def Gilbert2D_d2xyz(dst_idx, cur_idx, p, alpha, beta):
                             v_add(alpha2, v_neg(alpha)) )
 
 
+########################
+#  __ _ ____  _ _ _  __
+# / _` (_-< || | ' \/ _|
+# \__,_/__/\_, |_||_\__|
+#          |__/
+########################
+
 def Gilbert2DAsync(p, alpha, beta):
     a = abs_sum_v(alpha)
     b = abs_sum_v(beta)
@@ -1436,18 +1596,18 @@ def Gilbert2DAsync(p, alpha, beta):
     yield from Gilbert2DAsync( v_add(p, v_add( v_add(alpha, v_neg(d_alpha)), v_add(beta2, v_neg(d_beta)) ) ),
                                v_neg(beta2),
                                v_add(alpha2, v_neg(alpha)) )
-    
+
 
 
 
 
 
 ####################################################
-#   ______ ____           __  ___  ___    __    __ 
+#   ______ ____           __  ___  ___    __    __
 #  / ___(_) / /  ___ ____/ /_|_  |/ _ \__/ /___/ /_
 # / (_ / / / _ \/ -_) __/ __/ __// // /_  __/_  __/
-# \___/_/_/_.__/\__/_/  \__/____/____/ /_/   /_/   
-#                                                  
+# \___/_/_/_.__/\__/_/  \__/____/____/ /_/   /_/
+#
 ####################################################
 
 

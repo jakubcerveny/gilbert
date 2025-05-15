@@ -3,20 +3,38 @@
 
 N=13
 
-VERBOSE_LEVEL=2
+PYTHON_TESTS=1
+JAVASCRIPT_TESTS=1
+VERBOSE_LEVEL=1
 ERR=0
 
+CHECK_OPT=""
+if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+  CHECK_OPT='verbose'
+fi
 
-## Python version
-##
-for z in `seq 1 $N` ; do
+
+if [[ $PYTHON_TESTS ]] ; then
+
+  if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+    echo "# Python"
+  fi
+
+  ## async
+  ##
+  if [[ "$VERBOSE_LEVEL" -gt 0 ]] ; then
+    echo -n "#Py: gilbert2d (async): "
+    if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+      echo ""
+    fi
+  fi
+
   for y in `seq 1 $N` ; do
     for x in `seq 1 $N` ; do
 
       if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
-        echo "## $x $y $z"
+        echo "## $x $y"
       fi
-
 
       a0=`echo "$x%2" | bc`
       if [[ "$a0" = 1 ]] && ( [[ "$y" = 2 ]] || [[ "$z" == 1 ]] ) ; then
@@ -32,9 +50,9 @@ for z in `seq 1 $N` ; do
         continue
       fi
 
-      ./gilbert3dpp.py -a d2xyz $x $y -D $z | \
+      ./gilbert3dpp.py -a xy $x $y | \
         grep -v '#' | \
-        ./gilbert-check-curve verbose
+        ./gilbert-check-curve $CHECK_OPT
 
       if [[ "$?" != 0 ]] ; then
         ERR=1
@@ -45,21 +63,29 @@ for z in `seq 1 $N` ; do
     done
     if [[ "$ERR" != 0 ]] ; then break ; fi
   done
-  if [[ "$ERR" != 0 ]] ; then break ; fi
-done
 
-exit
+  if [[ "$ERR" != 0 ]] ; then
+    echo FAIL
+    exit -1
+  fi
+  echo pass
 
-## Python version
-##
-for z in `seq 1 $N` ; do
+
+  ## d2xy
+  ##
+  if [[ "$VERBOSE_LEVEL" -gt 0 ]] ; then
+    echo -n "#Py: gilbert2d d2xy (sync): "
+    if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+      echo ""
+    fi
+  fi
+
   for y in `seq 1 $N` ; do
     for x in `seq 1 $N` ; do
 
       if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
-        echo "## $x $y $z"
+        echo "## $x $y"
       fi
-
 
       a0=`echo "$x%2" | bc`
       if [[ "$a0" = 1 ]] && ( [[ "$y" = 2 ]] || [[ "$z" == 1 ]] ) ; then
@@ -75,9 +101,9 @@ for z in `seq 1 $N` ; do
         continue
       fi
 
-      ./gilbert3dpp.py -a xyz $x $y -D $z | \
+      ./gilbert3dpp.py -a d2xy $x $y | \
         grep -v '#' | \
-        ./gilbert-check-curve verbose
+        ./gilbert-check-curve $CHECK_OPT
 
       if [[ "$?" != 0 ]] ; then
         ERR=1
@@ -88,150 +114,22 @@ for z in `seq 1 $N` ; do
     done
     if [[ "$ERR" != 0 ]] ; then break ; fi
   done
-  if [[ "$ERR" != 0 ]] ; then break ; fi
-done
 
-exit
-
-
-if [[ "$VERBOSE_LEVEL" -gt 0 ]] ; then
-  echo -n "#gilbert2d xy (async): "
-  if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
-    echo ""
+  if [[ "$ERR" != 0 ]] ; then
+    echo FAIL
+    exit -1
   fi
-fi
+  echo pass
 
-
-for y in `seq 1 $N` ; do
-  for x in `seq 1 $N` ; do
-
+  ## xy2d
+  ##
+  if [[ "$VERBOSE_LEVEL" -gt 0 ]] ; then
+    echo -n "#Py: gilbert2d xy2d (sync): "
     if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
-      echo "## $x $y"
+      echo ""
     fi
-
-    a0=`echo "$x%2" | bc`
-    if [[ "$a0" = 1 ]] && [[ "$y" = 2 ]] ; then
-      if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
-        echo "# skipping (known bad configuration: $x $y)"
-      fi
-      continue
-    fi
-
-    node ./gilbert3dpp.js xy $x $y  | \
-      grep -v '#' | \
-      ./gilbert-check-curve
-    if [[ "$?" != 0 ]] ; then
-      ERR=1
-      break
-    fi
-  done
-  if [[ "$ERR" != 0 ]] ; then break ; fi
-done
-
-if [[ "$ERR" != 0 ]] ; then
-  echo FAIL
-  exit -1
-fi
-echo pass
-
-
-
-if [[ "$VERBOSE_LEVEL" -gt 0 ]] ; then
-  echo -n "#gilbert2d d2xy (sync): "
-  if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
-    echo ""
   fi
-fi
 
-for y in `seq 1 $N` ; do
-  for x in `seq 1 $N` ; do
-    if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
-      echo "## $x $y"
-    fi
-
-
-    a0=`echo "$x%2" | bc`
-    if [[ "$a0" = 1 ]] && [[ "$y" = 2 ]] ; then
-      if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
-        echo "# skipping (known bad configuration: $x $y)"
-      fi
-      continue
-    fi
-
-    node ./gilbert3dpp.js d2xy $x $y | \
-      grep -v '#' | \
-      ./gilbert-check-curve
-    if [[ "$?" != 0 ]] ; then
-      ERR=1
-      break
-    fi
-  done
-  if [[ "$ERR" != 0 ]] ; then break ; fi
-done
-
-if [[ "$ERR" != 0 ]] ; then
-  echo FAIL
-  exit -1
-fi
-
-echo pass
-
-
-if [[ "$VERBOSE_LEVEL" -gt 0 ]] ; then
-  echo -n "#gilbert2d xy2d (sync): "
-  if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
-    echo ""
-  fi
-fi
-
-
-for y in `seq 1 $N` ; do
-  for x in `seq 1 $N` ; do
-    if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
-      echo "## $x $y"
-    fi
-
-
-    a0=`echo "$x%2" | bc`
-    if [[ "$a0" = 1 ]] && [[ "$y" = 2 ]] ; then
-      if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
-        echo "# skipping (known bad configuration: $x $y)"
-      fi
-      continue
-    fi
-
-    node ./gilbert3dpp.js xy2d $x $y | \
-      grep -v '#' | \
-      sort -n | \
-      cut -f2- -d' ' | ./gilbert-check-curve
-
-    if [[ "$?" != 0 ]] ; then
-      ERR=1
-      break
-    fi
-
-  done
-  if [[ "$ERR" != 0 ]] ; then break ; fi
-done
-
-if [[ "$ERR" != 0 ]] ; then
-  echo FAIL
-  exit -1
-fi
-echo pass
-
-
-if [[ "$VERBOSE_LEVEL" -gt 0 ]] ; then
-  echo -n "#gilbert3d xyz (async): "
-  if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
-    echo ""
-  fi
-fi
-
-
-## JS version
-##
-for z in `seq 1 $N` ; do
   for y in `seq 1 $N` ; do
     for x in `seq 1 $N` ; do
 
@@ -254,114 +152,316 @@ for z in `seq 1 $N` ; do
         continue
       fi
 
-      node ./gilbert3dpp.js xyz $x $y $z | \
+      ./gilbert3dpp.py -a xy2d $x $y | \
+        grep -v '#' | \
+        sort -n | cut -f2- -d' ' | \
+        ./gilbert-check-curve $CHECK_OPT
+
+      if [[ "$?" != 0 ]] ; then
+        ERR=1
+        break
+      fi
+
+    done
+    if [[ "$ERR" != 0 ]] ; then break ; fi
+  done
+
+  if [[ "$ERR" != 0 ]] ; then
+    echo FAIL
+    exit -1
+  fi
+  echo pass
+
+
+  ## async
+  ##
+  if [[ "$VERBOSE_LEVEL" -gt 0 ]] ; then
+    echo -n "#Py: gilbert3d (async): "
+    if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+      echo ""
+    fi
+  fi
+
+  for z in `seq 1 $N` ; do
+    for y in `seq 1 $N` ; do
+      for x in `seq 1 $N` ; do
+
+        if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+          echo "## $x $y $z"
+        fi
+
+
+        a0=`echo "$x%2" | bc`
+        if [[ "$a0" = 1 ]] && ( [[ "$y" = 2 ]] || [[ "$z" == 1 ]] ) ; then
+          if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+            echo "# skipping (known bad configuration: $x $y $z)"
+          fi
+          continue
+        fi
+        if [[ "$a0" = 1 ]] && ( [[ "$y" = 1 ]] || [[ "$z" == 2 ]] ) ; then
+          if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+            echo "# skipping (known bad configuration: $x $y $z)"
+          fi
+          continue
+        fi
+
+        ./gilbert3dpp.py -a xyz $x $y -D $z | \
+          grep -v '#' | \
+          ./gilbert-check-curve $CHECK_OPT
+
+        if [[ "$?" != 0 ]] ; then
+          ERR=1
+          break
+        fi
+
+
+      done
+      if [[ "$ERR" != 0 ]] ; then break ; fi
+    done
+    if [[ "$ERR" != 0 ]] ; then break ; fi
+  done
+
+  if [[ "$ERR" != 0 ]] ; then
+    echo FAIL
+    exit -1
+  fi
+  echo pass
+
+  ## d2xyz
+  ##
+  ## xyz2d
+  ##
+  if [[ "$VERBOSE_LEVEL" -gt 0 ]] ; then
+    echo -n "#Py: gilbert3d d2xyz (sync): "
+    if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+      echo ""
+    fi
+  fi
+
+  for z in `seq 1 $N` ; do
+    for y in `seq 1 $N` ; do
+      for x in `seq 1 $N` ; do
+
+        if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+          echo "## $x $y $z"
+        fi
+
+
+        a0=`echo "$x%2" | bc`
+        if [[ "$a0" = 1 ]] && ( [[ "$y" = 2 ]] || [[ "$z" == 1 ]] ) ; then
+          if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+            echo "# skipping (known bad configuration: $x $y $z)"
+          fi
+          continue
+        fi
+        if [[ "$a0" = 1 ]] && ( [[ "$y" = 1 ]] || [[ "$z" == 2 ]] ) ; then
+          if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+            echo "# skipping (known bad configuration: $x $y $z)"
+          fi
+          continue
+        fi
+
+        ./gilbert3dpp.py -a d2xyz $x $y -D $z | \
+          grep -v '#' | \
+          ./gilbert-check-curve $CHECK_OPT
+
+        if [[ "$?" != 0 ]] ; then
+          ERR=1
+          break
+        fi
+
+
+      done
+      if [[ "$ERR" != 0 ]] ; then break ; fi
+    done
+    if [[ "$ERR" != 0 ]] ; then break ; fi
+  done
+
+  if [[ "$ERR" != 0 ]] ; then
+    echo FAIL
+    exit -1
+  fi
+  echo pass
+
+
+  ## xyz2d
+  ##
+  if [[ "$VERBOSE_LEVEL" -gt 0 ]] ; then
+    echo -n "#Py: gilbert3d xyz2d (sync): "
+    if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+      echo ""
+    fi
+  fi
+
+  for z in `seq 1 $N` ; do
+    for y in `seq 1 $N` ; do
+      for x in `seq 1 $N` ; do
+
+        if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+          echo "## $x $y $z"
+        fi
+
+
+        a0=`echo "$x%2" | bc`
+        if [[ "$a0" = 1 ]] && ( [[ "$y" = 2 ]] || [[ "$z" == 1 ]] ) ; then
+          if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+            echo "# skipping (known bad configuration: $x $y $z)"
+          fi
+          continue
+        fi
+        if [[ "$a0" = 1 ]] && ( [[ "$y" = 1 ]] || [[ "$z" == 2 ]] ) ; then
+          if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+            echo "# skipping (known bad configuration: $x $y $z)"
+          fi
+          continue
+        fi
+
+        ./gilbert3dpp.py -a xyz2d $x $y -D $z | \
+          grep -v '#' | \
+          sort -n | cut -f2- -d' ' | \
+          ./gilbert-check-curve $CHECK_OPT
+
+        if [[ "$?" != 0 ]] ; then
+          ERR=1
+          break
+        fi
+
+
+      done
+      if [[ "$ERR" != 0 ]] ; then break ; fi
+    done
+    if [[ "$ERR" != 0 ]] ; then break ; fi
+  done
+
+  if [[ "$ERR" != 0 ]] ; then
+    echo FAIL
+    exit -1
+  fi
+  echo pass
+
+
+
+
+fi
+
+
+####
+####
+####
+
+if [[ $JAVASCRIPT_TESTS ]] ; then
+
+  if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+    echo "# JavaScript"
+  fi
+
+  if [[ "$VERBOSE_LEVEL" -gt 0 ]] ; then
+    echo -n "#JS: gilbert2d xy (async): "
+    if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+      echo ""
+    fi
+  fi
+
+
+  for y in `seq 1 $N` ; do
+    for x in `seq 1 $N` ; do
+
+      if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+        echo "## $x $y"
+      fi
+
+      a0=`echo "$x%2" | bc`
+      if [[ "$a0" = 1 ]] && [[ "$y" = 2 ]] ; then
+        if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+          echo "# skipping (known bad configuration: $x $y)"
+        fi
+        continue
+      fi
+
+      node ./gilbert3dpp.js xy $x $y  | \
         grep -v '#' | \
         ./gilbert-check-curve
-
       if [[ "$?" != 0 ]] ; then
         ERR=1
         break
       fi
-
-
     done
     if [[ "$ERR" != 0 ]] ; then break ; fi
   done
-  if [[ "$ERR" != 0 ]] ; then break ; fi
-done
 
-if [[ "$ERR" != 0 ]] ; then
-  echo FAIL
-  exit -1
-fi
-echo pass
-
-
-if [[ "$VERBOSE_LEVEL" -gt 0 ]] ; then
-  echo -n "#gilbert3d d2xyz (sync): "
-  if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
-    echo ""
+  if [[ "$ERR" != 0 ]] ; then
+    echo FAIL
+    exit -1
   fi
-fi
+  echo pass
 
 
-for z in `seq 1 $N` ; do
+
+  if [[ "$VERBOSE_LEVEL" -gt 0 ]] ; then
+    echo -n "#JS: gilbert2d d2xy (sync): "
+    if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+      echo ""
+    fi
+  fi
+
   for y in `seq 1 $N` ; do
     for x in `seq 1 $N` ; do
       if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
-        echo "## $x $y $z"
+        echo "## $x $y"
       fi
 
 
       a0=`echo "$x%2" | bc`
-      if [[ "$a0" = 1 ]] && ( [[ "$y" = 2 ]] || [[ "$z" == 1 ]] ) ; then
+      if [[ "$a0" = 1 ]] && [[ "$y" = 2 ]] ; then
         if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
-          echo "# skipping (known bad configuration: $x $y $z)"
-        fi
-        continue
-      fi
-      if [[ "$a0" = 1 ]] && ( [[ "$y" = 1 ]] || [[ "$z" == 2 ]] ) ; then
-        if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
-          echo "# skipping (known bad configuration: $x $y $z)"
+          echo "# skipping (known bad configuration: $x $y)"
         fi
         continue
       fi
 
-
-      node ./gilbert3dpp.js d2xyz $x $y $z | \
+      node ./gilbert3dpp.js d2xy $x $y | \
         grep -v '#' | \
         ./gilbert-check-curve
-
       if [[ "$?" != 0 ]] ; then
         ERR=1
         break
       fi
-
-
     done
     if [[ "$ERR" != 0 ]] ; then break ; fi
   done
-  if [[ "$ERR" != 0 ]] ; then break ; fi
-done
 
-if [[ "$ERR" != 0 ]] ; then
-  echo FAIL
-  exit -1
-fi
-echo pass
-
-
-if [[ "$VERBOSE_LEVEL" -gt 0 ]] ; then
-  echo -n "#gilbert3d xyz2d (sync): "
-  if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
-    echo ""
+  if [[ "$ERR" != 0 ]] ; then
+    echo FAIL
+    exit -1
   fi
-fi
+
+  echo pass
 
 
-for z in `seq 1 $N` ; do
+  if [[ "$VERBOSE_LEVEL" -gt 0 ]] ; then
+    echo -n "#JS: gilbert2d xy2d (sync): "
+    if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+      echo ""
+    fi
+  fi
+
+
   for y in `seq 1 $N` ; do
     for x in `seq 1 $N` ; do
       if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
-        echo "## $x $y $z"
+        echo "## $x $y"
       fi
 
 
       a0=`echo "$x%2" | bc`
-      if [[ "$a0" = 1 ]] && ( [[ "$y" = 2 ]] || [[ "$z" == 1 ]] ) ; then
+      if [[ "$a0" = 1 ]] && [[ "$y" = 2 ]] ; then
         if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
-          echo "# skipping (known bad configuration: $x $y $z)"
-        fi
-        continue
-      fi
-      if [[ "$a0" = 1 ]] && ( [[ "$y" = 1 ]] || [[ "$z" == 2 ]] ) ; then
-        if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
-          echo "# skipping (known bad configuration: $x $y $z)"
+          echo "# skipping (known bad configuration: $x $y)"
         fi
         continue
       fi
 
-      node ./gilbert3dpp.js xyz2d $x $y $z | \
+      node ./gilbert3dpp.js xy2d $x $y | \
         grep -v '#' | \
         sort -n | \
         cut -f2- -d' ' | ./gilbert-check-curve
@@ -371,19 +471,181 @@ for z in `seq 1 $N` ; do
         break
       fi
 
-
     done
     if [[ "$ERR" != 0 ]] ; then break ; fi
   done
-  if [[ "$ERR" != 0 ]] ; then break ; fi
-done
 
-if [[ "$ERR" != 0 ]] ; then
-  echo FAIL
-  exit -1
+  if [[ "$ERR" != 0 ]] ; then
+    echo FAIL
+    exit -1
+  fi
+  echo pass
+
+
+  if [[ "$VERBOSE_LEVEL" -gt 0 ]] ; then
+    echo -n "#JS: gilbert3d xyz (async): "
+    if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+      echo ""
+    fi
+  fi
+
+
+  ## JS version
+  ##
+  for z in `seq 1 $N` ; do
+    for y in `seq 1 $N` ; do
+      for x in `seq 1 $N` ; do
+
+        if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+          echo "## $x $y $z"
+        fi
+
+
+        a0=`echo "$x%2" | bc`
+        if [[ "$a0" = 1 ]] && ( [[ "$y" = 2 ]] || [[ "$z" == 1 ]] ) ; then
+          if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+            echo "# skipping (known bad configuration: $x $y $z)"
+          fi
+          continue
+        fi
+        if [[ "$a0" = 1 ]] && ( [[ "$y" = 1 ]] || [[ "$z" == 2 ]] ) ; then
+          if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+            echo "# skipping (known bad configuration: $x $y $z)"
+          fi
+          continue
+        fi
+
+        node ./gilbert3dpp.js xyz $x $y $z | \
+          grep -v '#' | \
+          ./gilbert-check-curve
+
+        if [[ "$?" != 0 ]] ; then
+          ERR=1
+          break
+        fi
+
+
+      done
+      if [[ "$ERR" != 0 ]] ; then break ; fi
+    done
+    if [[ "$ERR" != 0 ]] ; then break ; fi
+  done
+
+  if [[ "$ERR" != 0 ]] ; then
+    echo FAIL
+    exit -1
+  fi
+  echo pass
+
+
+  if [[ "$VERBOSE_LEVEL" -gt 0 ]] ; then
+    echo -n "#JS: gilbert3d d2xyz (sync): "
+    if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+      echo ""
+    fi
+  fi
+
+
+  for z in `seq 1 $N` ; do
+    for y in `seq 1 $N` ; do
+      for x in `seq 1 $N` ; do
+        if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+          echo "## $x $y $z"
+        fi
+
+
+        a0=`echo "$x%2" | bc`
+        if [[ "$a0" = 1 ]] && ( [[ "$y" = 2 ]] || [[ "$z" == 1 ]] ) ; then
+          if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+            echo "# skipping (known bad configuration: $x $y $z)"
+          fi
+          continue
+        fi
+        if [[ "$a0" = 1 ]] && ( [[ "$y" = 1 ]] || [[ "$z" == 2 ]] ) ; then
+          if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+            echo "# skipping (known bad configuration: $x $y $z)"
+          fi
+          continue
+        fi
+
+
+        node ./gilbert3dpp.js d2xyz $x $y $z | \
+          grep -v '#' | \
+          ./gilbert-check-curve
+
+        if [[ "$?" != 0 ]] ; then
+          ERR=1
+          break
+        fi
+
+
+      done
+      if [[ "$ERR" != 0 ]] ; then break ; fi
+    done
+    if [[ "$ERR" != 0 ]] ; then break ; fi
+  done
+
+  if [[ "$ERR" != 0 ]] ; then
+    echo FAIL
+    exit -1
+  fi
+  echo pass
+
+
+  if [[ "$VERBOSE_LEVEL" -gt 0 ]] ; then
+    echo -n "#JS: gilbert3d xyz2d (sync): "
+    if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+      echo ""
+    fi
+  fi
+
+
+  for z in `seq 1 $N` ; do
+    for y in `seq 1 $N` ; do
+      for x in `seq 1 $N` ; do
+        if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+          echo "## $x $y $z"
+        fi
+
+
+        a0=`echo "$x%2" | bc`
+        if [[ "$a0" = 1 ]] && ( [[ "$y" = 2 ]] || [[ "$z" == 1 ]] ) ; then
+          if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+            echo "# skipping (known bad configuration: $x $y $z)"
+          fi
+          continue
+        fi
+        if [[ "$a0" = 1 ]] && ( [[ "$y" = 1 ]] || [[ "$z" == 2 ]] ) ; then
+          if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+            echo "# skipping (known bad configuration: $x $y $z)"
+          fi
+          continue
+        fi
+
+        node ./gilbert3dpp.js xyz2d $x $y $z | \
+          grep -v '#' | \
+          sort -n | \
+          cut -f2- -d' ' | ./gilbert-check-curve
+
+        if [[ "$?" != 0 ]] ; then
+          ERR=1
+          break
+        fi
+
+
+      done
+      if [[ "$ERR" != 0 ]] ; then break ; fi
+    done
+    if [[ "$ERR" != 0 ]] ; then break ; fi
+  done
+
+  if [[ "$ERR" != 0 ]] ; then
+    echo FAIL
+    exit -1
+  fi
+  echo pass
+
 fi
-echo pass
-
 
 exit 0
 
