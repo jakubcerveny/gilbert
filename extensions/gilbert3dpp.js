@@ -415,7 +415,7 @@ function _inBounds(q, p, a, b, g) {
 // in alpha and beta axis.
 // alpha/beta can be in 3d and should work properly.
 //
-// recursive, async
+// recursive, sync
 //
 function Gilbert2D_d2xyz(dst_idx, cur_idx, p, alpha, beta) {
   let a = _abs(alpha);
@@ -646,7 +646,7 @@ function Gilbert2D_xyz2d(cur_idx, q, p, alpha, beta) {
 // in alpha and beta axis.
 // alpha/beta can be in 3d and should work properly.
 //
-// recursive, async
+// recursive, sync
 //
 function *Gilbert2DAsync(p, alpha, beta) {
   let a = _abs(alpha);

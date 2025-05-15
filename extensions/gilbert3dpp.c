@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-enum GILBERT3DPP_ADAPT_METHOD = {
+enum GILBERT3DPP_ADAPT_METHOD {
   HARMONY = 0,
   HAMILTONIAN,
   AXIS
@@ -107,6 +107,12 @@ int v_add(int *u, int *v, int *w) {
   u[2] = v[2] + w[2];
 }
 
+int v_sub(int *u, int *v, int *w) {
+  u[0] = v[0] - w[0];
+  u[1] = v[1] - w[1];
+  u[2] = v[2] - w[2];
+}
+
 int v_mul(int *u, int c, int *v) {
   u[0] = c*v[0];
   u[1] = c*v[1];
@@ -128,7 +134,7 @@ int v_delta(int *u, int *v) {
   return 0;
 }
 
-int inBounds(int *q, int *p, int *alpha, int *beta, int *_gamma=NULL) {
+int inBounds(int *q, int *p, int *alpha, int *beta, int *_gamma) {
   int xyz, d;
   int gamma[3] = {0};
 
@@ -161,7 +167,9 @@ int inBounds(int *q, int *p, int *alpha, int *beta, int *_gamma=NULL) {
   return 1;
 }
 
-
+int inBounds2(int *q, int *p, int *alpha, int *beta) {
+  return inBounds(q, p, alpha, beta, NULL);
+}
 
 /* ****
    __       __               ___              __  _
@@ -170,6 +178,213 @@ int inBounds(int *q, int *p, int *alpha, int *beta, int *_gamma=NULL) {
 /_//_/\__/_/ .__/\__/_/   /_/ \_,_/_//_/\__/\__/_/\___/_//_/___/
           /_/
 **** */
+
+int Gilbert2D_d2xyz(int *u, int dst_idx, int cur_idx, int *p, int *alpha, int *beta) {
+  int a, b,
+      a2, b2,
+      d_idx = 0;
+  int alpha2[3], beta2[3],
+      d_alpha[3], d_beta[3];
+  int tv[3];
+
+  int t_alpha[3], t_beta[3], t_p[3];
+
+  int nxt_idx;
+
+  a = abs_sum_v(alpha);
+  b = abs_sum_v(beta);
+
+  v_delta(d_alpha, alpha);
+  v_delta(d_beta, beta);
+
+  if (b==1) {
+    d_idx = dst_idx - cur_idx;
+    v_mul(tv, d_idx, d_alpha);
+    v_add(u, p, tv);
+    return 0;
+  }
+
+
+  if (a==1) {
+    d_idx = dst_idx - cur_idx;
+    v_mul(tv, d_idx, d_beta);
+    v_add(u, p, tv);
+    return 0;
+  }
+
+  v_div2(alpha2, alpha);
+  v_div2(beta2, beta);
+
+  a2 = abs_sum_v(alpha2);
+  b2 = abs_sum_v(beta2);
+
+  if ( (2*a) > (3*b) ) {
+    if ((a2%2) && (a>2)) {
+      v_add(alpha2, alpha2, d_alpha);
+      a2 = abs_sum_v(alpha2);
+    }
+
+    nxt_idx = cur_idx + (a2*b);
+    if ((cur_idx <= dst_idx) && (dst_idx < nxt_idx)) {
+      return Gilbert2D_d2xyz( u, dst_idx, cur_idx,
+                              p,
+                              alpha2,
+                              beta );
+    }
+    cur_idx = nxt_idx;
+
+
+    v_add(t_p, p, alpha2);
+    v_sub(t_alpha, alpha, alpha2);
+
+    return Gilbert2D_d2xyz( u, dst_idx, cur_idx,
+                            t_p,
+                            t_alpha,
+                            beta );
+
+  }
+
+
+  if ((b2%2) && (b>2)) {
+    v_add(beta2, beta2, d_beta);
+    b2 = abs_sum_v(beta2);
+  }
+
+
+  nxt_idx = cur_idx + (b2*a2);
+  if ((cur_idx <= dst_idx) && (dst_idx < nxt_idx)) {
+    return Gilbert2D_d2xyz( u, dst_idx, cur_idx,
+                            p,
+                            beta2,
+                            alpha2 );
+  }
+  cur_idx = nxt_idx;
+
+  nxt_idx = cur_idx + (a*(b-b2));
+  if ((cur_idx <= dst_idx) && (dst_idx < nxt_idx)) {
+
+    v_add(t_p, p, beta2);
+    v_sub(t_beta, beta, beta2);
+    return Gilbert2D_d2xyz( u, dst_idx, cur_idx,
+                            t_p,
+                            alpha,
+                            t_beta );
+  }
+  cur_idx = nxt_idx;
+
+  v_add(t_p, p, alpha);
+  v_sub(t_p, t_p, d_alpha);
+
+  v_add(t_p, t_p, beta2);
+  v_sub(t_p, t_p, d_beta);
+
+  v_neg(t_alpha, beta2);
+
+  v_sub(t_beta, alpha2, alpha);
+
+  return Gilbert2D_d2xyz( u, dst_idx, cur_idx,
+                          t_p,
+                          t_alpha,
+                          t_beta );
+}
+
+
+
+int Gilbert2D_xyz2d(int cur_idx, int *q, int *p, int *alpha, int *beta) {
+  int a,b, a2,b2;
+  int d_alpha[3], d_beta[3],
+      t_alpha[3], t_beta[3],
+      alpha2[3], beta2[3];
+
+  int tv[3], u[3];
+
+  a = abs_sum_v(alpha);
+  b = abs_sum_v(beta);       
+                            
+  u[0] = p[0];
+  u[1] = p[1];
+  u[2] = p[2];
+
+  v_delta(d_alpha, alpha);
+  v_delta(d_beta, beta);
+    
+  if ( b == 1 ) {
+    v_sub(tv, q, u);
+    return cur_idx + dot_v( d_alpha, tv );
+  }
+
+  if ( a == 1 ) {
+    v_sub(tv, q, u);
+    return cur_idx + dot_v( d_beta, tv );
+  }
+
+  v_div2(alpha2, alpha);
+  v_div2(beta2, beta);
+
+  a2 = abs_sum_v(alpha2);
+  b2 = abs_sum_v(beta2);
+
+  if ( (2*a) > (3*b) ) {
+    if ((a2%2) && (a>2)) {
+      v_add(alpha2, alpha2, d_alpha);
+      a2 = abs_sum_v(alpha2);
+    }
+
+    if (inBounds2(q, u, alpha2, beta)) {
+      return Gilbert2D_xyz2d( cur_idx, q,
+                              u,
+                              alpha2,
+                              beta );
+    }
+    cur_idx += (a2*b);
+    v_add(u, u, alpha2);
+
+    v_sub(t_alpha, alpha, alpha2);
+    return Gilbert2D_xyz2d( cur_idx, q,
+                            u,
+                            t_alpha,
+                            beta );
+
+  }
+
+
+  if ((b2%2) && (b>2)) {
+    v_add(beta2, beta2, d_beta);
+    b2 = abs_sum_v(beta2);
+  }
+
+  if (inBounds2(q, u, beta2, alpha2)) {
+    return Gilbert2D_xyz2d( cur_idx, q,
+                            u,
+                            beta2,
+                            alpha2 );
+  }
+  cur_idx += (b2*a2);
+
+  v_add(u, p, beta2);
+  v_sub(t_beta, beta, beta2);
+  if (inBounds2(q, u, alpha, t_beta)) {
+    return Gilbert2D_xyz2d( cur_idx, q,
+                            u,
+                            alpha,
+                            t_beta );
+  }
+  cur_idx += (a*(b-b2));
+
+  v_add(u, p, alpha);
+  v_sub(u, u, d_alpha);
+
+  v_add(u, u, beta2);
+  v_sub(u, u, d_beta);
+
+  v_neg(t_alpha, beta2);
+  v_sub(t_beta, alpha2, alpha);
+  return Gilbert2D_xyz2d( cur_idx, q,
+                          u,
+                          t_alpha,
+                          t_beta );
+
+}
 
 
 #define GILBERTPP_MAIN
@@ -190,6 +405,9 @@ int main(int argc, char **argv) {
   int w, h, d;
   int x, y, z;
   int idx;
+
+  int xyz[3] = {0}, p[3] = {0},
+      alpha[3], beta[3], gamma[3];
 
   char buf[1024];
 
@@ -225,8 +443,23 @@ int main(int argc, char **argv) {
 
   if (strncmp("xy2d", buf, 1023) == 0) {
 
+    p[0] = 0;
+    p[2] = 0;
+    p[2] = 0;
+
+    alpha[0] = w;
+    alpha[1] = 0;
+    alpha[2] = 0;
+
+    beta[0] = 0;
+    beta[1] = h;
+    beta[2] = 0;
+
     for (x = 0; x < w; x++) {
       for (y = 0; y < h; y++) {
+        xyz[0] = x;
+        xyz[1] = y;
+        xyz[2] = 0;
         idx = Gilbert_xy2d( x, y, w, h );
         printf("%i %i %i\n", idx, x, y);
       }
@@ -235,9 +468,21 @@ int main(int argc, char **argv) {
   }
   else if (strncmp("d2xy", buf, 1023) == 0) {
 
+    p[0] = 0;
+    p[2] = 0;
+    p[2] = 0;
+
+    alpha[0] = w;
+    alpha[1] = 0;
+    alpha[2] = 0;
+
+    beta[0] = 0;
+    beta[1] = h;
+    beta[2] = 0;
+
     for (idx = 0; idx < (w*h); idx++) {
-      Gilbert_d2xy( &x, &y, idx, w, h );
-      printf("%i %i\n", x, y);
+      Gilbert2D_d2xyz( xyz, idx, 0, p, alpha, beta );
+      printf("%i %i\n", xyz[0], xyz[1]);
     }
 
   }
@@ -246,8 +491,8 @@ int main(int argc, char **argv) {
     for (x = 0; x < w; x++) {
       for (y = 0; y < h; y++) {
         for (z = 0; z < d; z++) {
-          idx = Gilbert_xyz2d( x,y,z, w,h,d );
-          printf("%i %i %i %i\n", idx, x, y, z);
+          //idx = Gilbert_xyz2d( x,y,z, w,h,d );
+          //printf("%i %i %i %i\n", idx, x, y, z);
         }
       }
     }
@@ -256,9 +501,11 @@ int main(int argc, char **argv) {
 
   else if (strncmp("d2xyz", buf, 1023) == 0) {
 
+
+
     for (idx = 0; idx < (w*h*d); idx++) {
-      Gilbert_d2xyz( &x,&y,&z, idx, w,h,d );
-      printf("%i %i %i\n", x, y, z);
+      //Gilbert_d2xyz( xyz, idx, 0, p, alpha, beta )
+      //printf("%i %i %i\n", x, y, z);
     }
 
   }

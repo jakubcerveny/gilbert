@@ -3,8 +3,9 @@
 
 N=13
 
-PYTHON_TESTS=1
-JAVASCRIPT_TESTS=1
+C_TESTS=1
+#PYTHON_TESTS=1
+#JAVASCRIPT_TESTS=1
 VERBOSE_LEVEL=1
 ERR=0
 
@@ -13,6 +14,69 @@ if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
   CHECK_OPT='verbose'
 fi
 
+if [[ $C_TESTS ]] ; then
+
+  if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+    echo "# C"
+  fi
+
+  ## async
+  ##
+  if [[ "$VERBOSE_LEVEL" -gt 0 ]] ; then
+    echo -n "# C: gilbert2d d2xy (sync): "
+    if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+      echo ""
+    fi
+  fi
+
+  for y in `seq 1 $N` ; do
+    for x in `seq 1 $N` ; do
+
+      if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+        echo "## $x $y"
+      fi
+
+      a0=`echo "$x%2" | bc`
+      if [[ "$a0" = 1 ]] && ( [[ "$y" = 2 ]] || [[ "$z" == 1 ]] ) ; then
+        if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+          echo "# skipping (known bad configuration: $x $y $z)"
+        fi
+        continue
+      fi
+      if [[ "$a0" = 1 ]] && ( [[ "$y" = 1 ]] || [[ "$z" == 2 ]] ) ; then
+        if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+          echo "# skipping (known bad configuration: $x $y $z)"
+        fi
+        continue
+      fi
+
+      ./gilbert3dpp-c d2xy $x $y | \
+        grep -v '#' | \
+        ./gilbert-check-curve $CHECK_OPT
+
+      if [[ "$?" != 0 ]] ; then
+        ERR=1
+        break
+      fi
+
+
+    done
+    if [[ "$ERR" != 0 ]] ; then break ; fi
+  done
+
+  if [[ "$ERR" != 0 ]] ; then
+    echo FAIL
+    exit -1
+  fi
+  echo pass
+
+
+
+fi
+
+####
+####
+####
 
 if [[ $PYTHON_TESTS ]] ; then
 

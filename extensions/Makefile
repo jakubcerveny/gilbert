@@ -2,7 +2,8 @@
 CC := gcc
 RUSTC := rustc
 CFLAGS :=
-OPT := -O3
+#OPT := -O3
+OPT := -g
 RUSTOPT := -O
 
 #all: gilbert-c gilbert-rs
