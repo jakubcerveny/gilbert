@@ -199,6 +199,31 @@ def Hilbert2x2x2_d2xyz(dst_idx, cur_idx, p, alpha, beta, gamma):
     return [-1,-1,-1]
 
 
+def Hilbert2x2x2_xyz2d(idx, q, p, alpha, beta, gamma):
+    d_alpha = v_delta(alpha)
+    d_beta  = v_delta(beta)
+    d_gamma = v_delta(gamma)
+
+    lu = [ 0, 7,  1, 6,  3, 4,  2, 5 ]
+    dxyz = [
+        q[0] - p[0],
+        q[1] - p[1],
+        q[2] - p[2]
+    ]
+
+    m_qp = v_add(q, v_neg(p))
+    dxyz = [
+        dot_v(d_alpha, m_qp),
+        dot_v(d_beta, m_qp),
+        dot_v(d_gamma, m_qp)
+    ]
+
+    p_idx = (4*dxyz[2]) + (2*dxyz[1]) + dxyz[0]
+
+    if (p_idx < 0) or(p_idx > 7): return -1
+    return idx + lu[p_idx]
+
+
 ###################################################################
 #    __       __               ___              __  _             
 #   / /  ___ / /__  ___ ____  / _/_ _____  ____/ /_(_)__  ___  ___
@@ -521,6 +546,345 @@ def Gilbert3DAsync(p, alpha, beta, gamma):
 # /_\_\\_, /__/___\__,_|
 #      |__/             
 ########################
+
+def Gilbert3DS0_xyz2d( cur_idx, q, p, alpha, beta, gamma ):
+    alpha2  = v_div2(alpha)
+    d_alpha = v_delta(alpha)
+
+    a   = abs_sum_v(alpha)
+    a2  = abs_sum_v(alpha2)
+
+    b   = abs_sum_v(beta)
+    g   = abs_sum_v(gamma)
+
+    if ((a > 2) and ((a2 % 2)==1)):
+        alpha2 = v_add(alpha2, d_alpha)
+        a2 = abs_sum_v(alpha2)
+
+    u = [p[0],p[1],p[2]]
+    if (inBounds( q, p, alpha2, beta, gamma )):
+        return Gilbert3D_xyz2d( cur_idx, q,
+                                u,
+                                alpha2, beta, gamma )
+    cur_idx += (a2*b*g)
+
+    u = v_add(p, alpha2)
+    return Gilbert3D_xyz2d( cur_idx, q,
+                            u,
+                            v_add(alpha, v_neg(alpha2)), beta, gamma )
+
+
+def Gilbert3DS1_xyz2d( cur_idx, q, p, alpha, beta, gamma ):
+    alpha2 = v_div2(alpha)
+    gamma3 = v_divq(gamma, 3)
+
+    d_alpha = v_delta(alpha)
+    d_gamma = v_delta(gamma)
+
+    a = abs_sum_v(alpha)
+    b = abs_sum_v(beta)
+    g = abs_sum_v(gamma)
+
+    a2 = abs_sum_v(alpha2)
+    g3 = abs_sum_v(gamma3)
+
+    if (a > 2) and ((a2 % 2) == 1):
+        alpha2 = v_add(alpha2, d_alpha)
+        a2 = abs_sum_v(alpha2)
+
+
+    if (g > 2) and ((g3 % 2) == 1):
+        gamma3 = v_add(gamma3, d_gamma)
+        g3 = abs_sum_v(gamma3)
+
+    u = [p[0],p[1],p[2]]
+    if (inBounds(q, u, gamma3, alpha2, beta )):
+        return Gilbert3D_xyz2d( cur_idx, q,
+                                u,
+                                gamma3, alpha2, beta )
+    cur_idx += (g3*a2*b)
+
+    u =v_add(p, gamma3)
+    if (inBounds(q, u, alpha, beta, v_add(gamma, v_neg(gamma3)) )):
+      return Gilbert3D_xyz2d( cur_idx, q,
+                              u,
+                              alpha, beta, v_add(gamma, v_neg(gamma3)) )
+    cur_idx += (a*b*(g-g3))
+
+    u = v_add(p, v_add( v_add(alpha, v_neg(d_alpha)), v_add(gamma3, v_neg(d_gamma)) ) )
+    return Gilbert3D_xyz2d( cur_idx, q,
+                            u,
+                            v_neg(gamma3), v_neg(v_add(alpha, v_neg(alpha2))), beta )
+def Gilbert3DS2_xyz2d(cur_idx, q, p, alpha, beta, gamma):
+    alpha2  = v_div2(alpha)
+    beta3   = v_divq(beta, 3)
+
+    d_alpha = v_delta(alpha)
+    d_beta  = v_delta(beta)
+
+    a = abs_sum_v(alpha)
+    b = abs_sum_v(beta)
+    g = abs_sum_v(gamma)
+
+    a2 = abs_sum_v(alpha2)
+    b3 = abs_sum_v(beta3)
+
+    if (a > 2) and ((a2 % 2) == 1):
+        alpha2 = v_add(alpha2, d_alpha)
+        a2 = abs_sum_v(alpha2)
+
+
+    if (b > 2) and ((b3 % 2) == 1):
+        beta3 = v_add(beta3, d_beta)
+        b3 = abs_sum_v(beta3)
+
+
+    u = [p[0],p[1],p[2]]
+    if (inBounds(q, u, beta3, gamma, alpha2 )):
+        return Gilbert3D_xyz2d( cur_idx, q,
+                                u,
+                                beta3, gamma, alpha2 )
+    cur_idx += (b3*g*a2)
+
+    u = v_add(p, beta3)
+    if (inBounds(q, u, alpha, v_add(beta, v_neg(beta3)), gamma )):
+        return Gilbert3D_xyz2d( cur_idx, q,
+                                u,
+                                alpha, v_add(beta, v_neg(beta3)), gamma )
+    cur_idx += (a*(b-b3)*g)
+
+    u = v_add( p, v_add( v_add(alpha, v_neg(d_alpha)), v_add(beta3, v_neg(d_beta)) ) )
+    return Gilbert3D_xyz2d( cur_idx, q,
+                            u,
+                            v_neg(beta3), gamma, v_neg(v_add(alpha, v_neg(alpha2))) )
+
+
+def Gilbert3DJ0_xyz2d(cur_idx, q, p, alpha, beta, gamma):
+    alpha2  = v_div2(alpha)
+    beta2   = v_div2(beta)
+    gamma2  = v_div2(gamma)
+
+    d_alpha  = v_delta(alpha)
+    d_beta   = v_delta(beta)
+    d_gamma  = v_delta(gamma)
+
+    a = abs_sum_v(alpha)
+    b = abs_sum_v(beta)
+    g = abs_sum_v(gamma)
+
+    a2 = abs_sum_v(alpha2)
+    b2 = abs_sum_v(beta2)
+    g2 = abs_sum_v(gamma2)
+
+    if (a > 2) and ((a2 % 2) == 1):
+        alpha2 = v_add(alpha2, d_alpha)
+        a2 = abs_sum_v(alpha2)
+    if (b > 2) and ((b2 % 2) == 1):
+        beta2  = v_add(beta2, d_beta)
+        b2 = abs_sum_v(beta2)
+    if (g > 2) and ((g2 % 2) == 1):
+        gamma2 = v_add(gamma2, d_gamma)
+        g2 = abs_sum_v(gamma2)
+
+    u = [p[0],p[1],p[2]]
+    if (inBounds(q, u, beta2, gamma2, alpha2)):
+        return Gilbert3D_xyz2d( cur_idx, q,
+                                u,
+                                beta2, gamma2, alpha2 )
+    cur_idx += (b2*g2*a2)
+
+    u = v_add(p, beta2)
+    if (inBounds(q, u, gamma, alpha2, v_add(beta, v_neg(beta2)) )):
+        return Gilbert3D_xyz2d( cur_idx, q,
+                                u,
+                                gamma, alpha2, v_add(beta, v_neg(beta2)) )
+    cur_idx += (g*a2*(b-b2))
+
+    u = v_add( p, v_add( v_add(beta2, v_neg(d_beta)), v_add(gamma, v_neg(d_gamma)) ) )
+    if (inBounds(q, u, alpha, v_neg(beta2), v_neg( v_add(gamma, v_neg(gamma2)) ) )):
+        return Gilbert3D_xyz2d( cur_idx, q,
+                                u,
+                                alpha, v_neg(beta2), v_neg( v_add(gamma, v_neg(gamma2)) ) )
+    cur_idx += (a*b2*(g-g2))
+
+    u = v_add( p, v_add( v_add(alpha, v_neg(d_alpha)), v_add(beta2, v_add(gamma, v_neg(d_gamma))) ) )
+    if (inBounds(q, u, v_neg(gamma), v_neg( v_add(alpha, v_neg(alpha2)) ), v_add(beta, v_neg(beta2)) )):
+        return Gilbert3D_xyz2d( cur_idx, q,
+                                u,
+                                v_neg(gamma), v_neg( v_add(alpha, v_neg(alpha2)) ), v_add(beta, v_neg(beta2)) )
+    cur_idx += (g*(a-a2)*(b-b2))
+
+    u = v_add( p, v_add( v_add(alpha, v_neg(d_alpha)), v_add(beta2, v_neg(d_beta)) ) )
+    return Gilbert3D_xyz2d( cur_idx, q,
+                            u,
+                            v_neg(beta2), gamma2, v_neg( v_add(alpha, v_neg(alpha2)) ) )
+
+
+def Gilbert3DJ1_xyz2d(cur_idx, q, p, alpha, beta, gamma):
+    alpha2  = v_div2(alpha)
+    beta2   = v_div2(beta)
+    gamma2  = v_div2(gamma)
+
+    d_alpha  = v_delta(alpha)
+    d_beta   = v_delta(beta)
+    d_gamma  = v_delta(gamma)
+
+    a = abs_sum_v(alpha)
+    b = abs_sum_v(beta)
+    g = abs_sum_v(gamma)
+
+    a2 = abs_sum_v(alpha2)
+    b2 = abs_sum_v(beta2)
+    g2 = abs_sum_v(gamma2)
+
+    if (a > 2) and ((a2 % 2) == 0):
+        alpha2 = v_add(alpha2, d_alpha)
+        a2 = abs_sum_v(alpha2)
+    if (b > 2) and ((b2 % 2) == 1):
+        beta2  = v_add(beta2, d_beta)
+        b2 = abs_sum_v(beta2)
+    if (g > 2) and ((g2 % 2) == 1):
+        gamma2 = v_add(gamma2, d_gamma)
+        g2 = abs_sum_v(gamma2)
+
+    u = [p[0],p[1],p[2]]
+    if (inBounds(q, u, gamma2, alpha2, beta2)):
+        return Gilbert3D_xyz2d( cur_idx, q,
+                                p,
+                                gamma2, alpha2, beta2 )
+    cur_idx += (g2*a2*b2)
+
+    u = v_add(p, gamma2)
+    if (inBounds(q, u, beta, v_add(gamma, v_neg(gamma2)), alpha2)):
+        return Gilbert3D_xyz2d( cur_idx, q,
+                                u,
+                                beta, v_add(gamma, v_neg(gamma2)), alpha2 )
+    cur_idx += b*(g-g2)*a2
+
+    u = v_add( p, v_add( v_add(gamma2, v_neg(d_gamma)), v_add(beta, v_neg(d_beta)) ) )
+    if (inBounds(q, u, alpha, v_neg(v_add(beta, v_neg(beta2))), v_neg(gamma2) )):
+        return Gilbert3D_xyz2d( cur_idx, q,
+                                u,
+                                alpha, v_neg(v_add(beta, v_neg(beta2))), v_neg(gamma2) )
+    cur_idx += a*(b-b2)*g2
+
+    u = v_add( p , v_add( v_add(alpha, v_neg(d_alpha)), v_add( v_add(beta, v_neg(d_beta)), gamma2 ) ) )
+    if (inBounds(q, u, v_neg(beta), v_add(gamma, v_neg(gamma2)), v_neg(v_add(alpha, v_neg(alpha2))) )):
+        return Gilbert3D_xyz2d( cur_idx, q,
+                                u,
+                                v_neg(beta), v_add(gamma, v_neg(gamma2)), v_neg(v_add(alpha, v_neg(alpha2))) )
+
+    cur_idx += (b*(g-g2)*(a-a2))
+
+    u = v_add( p, v_add( v_add(alpha, v_neg(d_alpha)), v_add(gamma2, v_neg(d_gamma)) ) )
+    return Gilbert3D_xyz2d( cur_idx, q,
+                            u,
+                            v_neg(gamma2), v_neg(v_add(alpha, v_neg(alpha2))), beta2 )
+
+
+def Gilbert3DJ2_xyz2d(cur_idx, q, p, alpha, beta, gamma):
+    alpha2  = v_div2(alpha)
+    beta2   = v_div2(beta)
+    gamma2  = v_div2(gamma)
+
+    d_alpha  = v_delta(alpha)
+    d_beta   = v_delta(beta)
+    d_gamma  = v_delta(gamma)
+
+    a = abs_sum_v(alpha)
+    b = abs_sum_v(beta)
+    g = abs_sum_v(gamma)
+
+    a2 = abs_sum_v(alpha2)
+    b2 = abs_sum_v(beta2)
+    g2 = abs_sum_v(gamma2)
+
+    if (a > 2) and ((a2 % 2) == 0):
+        alpha2 = v_add(alpha2, d_alpha)
+        a2 = abs_sum_v(alpha2)
+    if (b > 2) and ((b2 % 2) == 1):
+        beta2  = v_add(beta2, d_beta)
+        b2 = abs_sum_v(beta2)
+    if (g > 2) and ((g2 % 2) == 1):
+        gamma2 = v_add(gamma2, d_gamma)
+        g2 = abs_sum_v(gamma2)
+
+    u = [p[0],p[1],p[2]]
+    if (inBounds(q, p, beta2, gamma, alpha2)):
+        return Gilbert3D_xyz2d( cur_idx, q,
+                                u,
+                                beta2, gamma, alpha2 )
+    cur_idx += (b2*g*a2)
+
+    u = v_add(p, beta2)
+    if (inBounds(q, u, gamma2, alpha, v_add(beta, v_neg(beta2)))):
+        return Gilbert3D_xyz2d( cur_idx, q,
+                                u,
+                                gamma2, alpha, v_add(beta, v_neg(beta2)) )
+    cur_idx += (g2*a*(b-b2))
+
+    u = v_add(p, v_add(beta2, gamma2))
+    if (inBounds(q, u, alpha, v_add(beta, v_neg(beta2)), v_add(gamma, v_neg(gamma2)))):
+        return Gilbert3D_xyz2d( cur_idx, q,
+                                u,
+                                alpha, v_add(beta, v_neg(beta2)), v_add(gamma, v_neg(gamma2)) )
+    cur_idx += (a*(b-b2)*(g-g2))
+
+    u = v_add( p, v_add( v_add( alpha, v_neg(d_alpha) ), v_add( v_add(beta2, v_neg(d_beta)), gamma2 ) ) )
+    if (inBounds(q, u, v_neg(beta2), v_add(gamma, v_neg(gamma2)), v_neg(v_add(alpha, v_neg(alpha2))))):
+        return Gilbert3D_xyz2d( cur_idx, q,
+                                u,
+                                v_neg(beta2), v_add(gamma, v_neg(gamma2)), v_neg(v_add(alpha, v_neg(alpha2))) )
+    cur_idx += (b2*(g-g2)*(a-a2))
+
+    u = v_add( p, v_add( v_add(alpha, v_neg(d_alpha)), v_add( gamma2, v_neg(d_gamma) ) ) )
+    return Gilbert3D_xyz2d( cur_idx, q,
+                            u,
+                            v_neg(gamma2), v_neg(v_add(alpha, v_neg(alpha2))), beta2)
+
+
+def Gilbert3D_xyz2d(cur_idx, q, p, alpha, beta, gamma):
+    a = abs_sum_v(alpha)
+    b = abs_sum_v(beta)
+    g = abs_sum_v(gamma)
+
+    a0 = (a % 2)
+    b0 = (b % 2)
+    g0 = (g % 2)
+
+    # base cases
+    #
+    if (a == 2) and (b == 2) and (g == 2):
+        return Hilbert2x2x2_xyz2d(cur_idx, q, p, alpha, beta, gamma)
+
+
+    if (a == 1): return Gilbert2D_xyz2d(cur_idx, q, p, beta, gamma)
+    if (b == 1): return Gilbert2D_xyz2d(cur_idx, q, p, alpha, gamma)
+    if (g == 1): return Gilbert2D_xyz2d(cur_idx, q, p, alpha, beta)
+
+    # eccentric cases
+    # 
+    if ((3*a) > (5*b)) and ((3*a) > (5*g)):
+      return Gilbert3DS0_xyz2d(cur_idx, q, p, alpha, beta, gamma)
+
+    if ((2*b) > (3*g)) or ((2*b) > (3*a)):
+        return Gilbert3DS2_xyz2d(cur_idx, q, p, alpha, beta, gamma)
+
+    if ((2*g) > (3*b)):
+        return Gilbert3DS1_xyz2d(cur_idx, q, p, alpha, beta, gamma)
+
+    # bulk recursion
+    # 
+    if (g0 == 0):
+        return Gilbert3DJ0_xyz2d(cur_idx, q, p, alpha, beta, gamma)
+
+    if ((a0 == 0) or (b0 == 0)):
+        return Gilbert3DJ1_xyz2d(cur_idx, q, p, alpha, beta, gamma)
+
+
+    # a0 == b0 == g0 == 1
+    #
+    return Gilbert3DJ2_xyz2d(cur_idx, q, p, alpha, beta, gamma)
 
 
 ########################
@@ -1265,6 +1629,21 @@ if __name__ == "__main__":
         for idx in range(W*H*D):
             xyz = Gilbert3D_d2xyz( idx, 0, p, alpha, beta, gamma )
             print(xyz[0], xyz[1], xyz[2])
+
+    elif action == 'xyz2d':
+        W = args.width
+        H = args.height
+        D = depth
+        p = [0,0,0]
+        alpha = [args.width,0,0]
+        beta = [0,args.height,0]
+        gamma = [0,0,depth]
+        for z in range(D):
+            for y in range(H):
+                for x in range(W):
+                    xyz = [x,y,z]
+                    idx = Gilbert3D_xyz2d( 0, xyz, p, alpha, beta, gamma )
+                    print(idx, xyz[0], xyz[1], xyz[2])
 
     elif action == 'h2x2x2':
         alpha = [args.width,0,0]

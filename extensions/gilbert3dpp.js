@@ -20,7 +20,7 @@
 // Running from the command line will list options.
 //
 
-var DEBUG = 0;
+var DEBUG = 1;
 
 function _dprint() {
   let _debug = ((typeof DEBUG === "undefined") ? false : DEBUG );

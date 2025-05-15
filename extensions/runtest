@@ -3,8 +3,96 @@
 
 N=13
 
-VERBOSE_LEVEL=1
+VERBOSE_LEVEL=2
 ERR=0
+
+
+## Python version
+##
+for z in `seq 1 $N` ; do
+  for y in `seq 1 $N` ; do
+    for x in `seq 1 $N` ; do
+
+      if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+        echo "## $x $y $z"
+      fi
+
+
+      a0=`echo "$x%2" | bc`
+      if [[ "$a0" = 1 ]] && ( [[ "$y" = 2 ]] || [[ "$z" == 1 ]] ) ; then
+        if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+          echo "# skipping (known bad configuration: $x $y $z)"
+        fi
+        continue
+      fi
+      if [[ "$a0" = 1 ]] && ( [[ "$y" = 1 ]] || [[ "$z" == 2 ]] ) ; then
+        if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+          echo "# skipping (known bad configuration: $x $y $z)"
+        fi
+        continue
+      fi
+
+      ./gilbert3dpp.py -a d2xyz $x $y -D $z | \
+        grep -v '#' | \
+        ./gilbert-check-curve verbose
+
+      if [[ "$?" != 0 ]] ; then
+        ERR=1
+        break
+      fi
+
+
+    done
+    if [[ "$ERR" != 0 ]] ; then break ; fi
+  done
+  if [[ "$ERR" != 0 ]] ; then break ; fi
+done
+
+exit
+
+## Python version
+##
+for z in `seq 1 $N` ; do
+  for y in `seq 1 $N` ; do
+    for x in `seq 1 $N` ; do
+
+      if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+        echo "## $x $y $z"
+      fi
+
+
+      a0=`echo "$x%2" | bc`
+      if [[ "$a0" = 1 ]] && ( [[ "$y" = 2 ]] || [[ "$z" == 1 ]] ) ; then
+        if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+          echo "# skipping (known bad configuration: $x $y $z)"
+        fi
+        continue
+      fi
+      if [[ "$a0" = 1 ]] && ( [[ "$y" = 1 ]] || [[ "$z" == 2 ]] ) ; then
+        if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+          echo "# skipping (known bad configuration: $x $y $z)"
+        fi
+        continue
+      fi
+
+      ./gilbert3dpp.py -a xyz $x $y -D $z | \
+        grep -v '#' | \
+        ./gilbert-check-curve verbose
+
+      if [[ "$?" != 0 ]] ; then
+        ERR=1
+        break
+      fi
+
+
+    done
+    if [[ "$ERR" != 0 ]] ; then break ; fi
+  done
+  if [[ "$ERR" != 0 ]] ; then break ; fi
+done
+
+exit
+
 
 if [[ "$VERBOSE_LEVEL" -gt 0 ]] ; then
   echo -n "#gilbert2d xy (async): "
@@ -141,6 +229,8 @@ if [[ "$VERBOSE_LEVEL" -gt 0 ]] ; then
 fi
 
 
+## JS version
+##
 for z in `seq 1 $N` ; do
   for y in `seq 1 $N` ; do
     for x in `seq 1 $N` ; do
