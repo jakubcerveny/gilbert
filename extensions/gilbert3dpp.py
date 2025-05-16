@@ -22,8 +22,6 @@
 # Running from the command line will list options.
 #
 
-VERBOSE = 1
-
 ADAPT_METHOD = {
     "HARMONY" : 0,
     "HAMILTONIAN": 1,
@@ -504,74 +502,43 @@ def Gilbert3DAsync(p, alpha, beta, gamma):
 
     (a0,b0,g0) = ( a % 2, b % 2, g % 2 )
 
-    if VERBOSE > 0: print("#G3Dasync: p:", p, "alpha:", alpha, "beta:", beta, "gamma:", gamma, "(", a0,b0,g0,")")
-
     if (a == 2) and (b == 2) and (g == 2):
-
-        if VERBOSE > 0: print("#  G3D.h2x2x2")
-
         yield from Hilbert2x2x2Async(p, alpha, beta, gamma)
         return
 
     if a == 1:
-
-        if VERBOSE > 0: print("#  G2D.bg")
-
         yield from Gilbert2DAsync(p, beta, gamma)
         return
 
     if b == 1:
-
-        if VERBOSE > 0: print("#  G2D.ag")
-
         yield from Gilbert2DAsync(p, alpha, gamma)
         return
 
     if g == 1:
-
-        if VERBOSE > 0: print("#  G2D.ab")
-
         yield from Gilbert2DAsync(p, alpha, beta)
         return
 
     if (((3*a) > (5*b)) and
         ((3*a) > (5*g))):
-
-        if VERBOSE > 0: print("#  G3D.S0")
-
         yield from Gilbert3DS0Async(p, alpha, beta, gamma)
         return
 
     if (((2*b) > (3*g)) or
         ((2*b) > (3*a))):
-
-        if VERBOSE > 0: print("#  G3D.S2")
-
         yield from Gilbert3DS2Async(p, alpha, beta, gamma)
         return
 
     if ((2*g) > (3*b)):
-
-        if VERBOSE > 0: print("#  G3D.S1")
-
         yield from Gilbert3DS1Async(p, alpha, beta, gamma)
         return
 
     if g0 == 0:
-
-        if VERBOSE > 0: print("#  G3D.J0")
-
         yield from Gilbert3DJ0Async(p, alpha, beta, gamma)
         return
 
     if (a0 == 0) or (b0 == 0):
-
-        if VERBOSE > 0: print("#  G3D.J1")
-
         yield from Gilbert3DJ1Async(p, alpha, beta, gamma)
         return
-
-    if VERBOSE > 0: print("#  G3D.J2")
 
     yield from Gilbert3DJ2Async(p, alpha, beta, gamma)
 
@@ -1644,6 +1611,85 @@ def Gilbert3D(width, height, depth):
     yield from Gilbert3DAsync(p, alpha, beta, gamma)
 
 
+def Gilbert2DAdapt(width, height, adapt_method):
+
+    p = [0,0,0]
+    alpha = [width, 0, 0]
+    beta = [0, height, 0]
+
+    if adapt_method == ADAPT_METHOD["HARMONY"]:
+
+        if width >= height:
+            alpha = [width, 0, 0]
+            beta = [0, height, 0]
+        else:
+            alpha = [0, height, 0]
+            beta = [width, 0, 0]
+
+    elif adapt_method == ADAPT_METHOD["HAMILTONIAN"]:
+
+        w0,h0 = width%2, height%2
+
+        if w0 == 0:
+            alpha = [width, 0, 0]
+            beta = [0, height, 0]
+        elif h0 == 0:
+            alpha = [0, height, 0]
+            beta = [width, 0, 0]
+        else:
+            # default width,height,depth
+            pass
+
+    yield from Gilbert2DAsync(p, alpha, beta)
+
+def Gilbert3DAdapt(width, height, depth, adapt_method):
+
+    p = [0,0,0]
+    alpha = [width, 0, 0]
+    beta = [0, height, 0]
+    gamma = [0, 0, depth]
+
+    if adapt_method == ADAPT_METHOD["HARMONY"]:
+
+        if (width >= height) and (width >= depth):
+            alpha = [width, 0, 0]
+            beta = [0, height, 0]
+            gamma = [0, 0, depth]
+        elif (height >= width) and (height >= depth):
+            alpha = [0, height, 0]
+            beta = [width, 0, 0]
+            gamma = [0, 0, depth]
+        else:
+            alpha = [0, 0, depth]
+            beta = [width, 0, 0]
+            gamma = [0, height, 0]
+
+    elif adapt_method == ADAPT_METHOD["HAMILTONIAN"]:
+
+        w0,h0,d0 = width%2, height%2, depth%2
+
+        if w0 == 0:
+            alpha = [width, 0, 0]
+            beta = [0, height, 0]
+            gamma = [0, 0, depth]
+        elif h0 == 0:
+            alpha = [0, height, 0]
+            beta = [width, 0, 0]
+            gamma = [0, 0, depth]
+        elif g0 == 0:
+            alpha = [0, 0, depth]
+            beta = [width, 0, 0]
+            gamma = [0, height, 0]
+        else:
+            # default width,height,depth
+            pass
+
+    yield from Gilbert3DAsync(p, alpha, beta, gamma)
+
+
+###
+###
+###
 
 def spotcheck_helperfunctions():
     import random
@@ -1737,6 +1783,7 @@ if __name__ == "__main__":
 
     action = 'xy'
     depth = 1
+    adapt_method = -1
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-a', '--action', type=str)
@@ -1746,18 +1793,32 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.action is not None:
-        action = args.action
+        tok = args.action.split(".")
+        if len(tok) > 1:
+            adapt_method = int(tok[1])
+            action = tok[0]
+        else:
+            action = args.action
 
     if args.depth is not None:
         depth = args.depth
 
     if action == 'xy':
-        for (x,y,z) in Gilbert2D(args.width, args.height):
-            print(x,y)
+
+        if adapt_method < 0:
+            for (x,y,z) in Gilbert2D(args.width, args.height):
+                print(x,y)
+        else:
+            for (x,y,z) in Gilbert2DAdapt(args.width, args.height, adapt_method):
+                print(x,y)
 
     elif action == 'xyz':
-        for (x,y,z) in Gilbert3D(args.width, args.height, depth):
-            print(x,y,z)
+        if adapt_method < 0:
+            for (x,y,z) in Gilbert3D(args.width, args.height, depth):
+                print(x,y,z)
+        else:
+            for (x,y,z) in Gilbert3DAdapt(args.width, args.height, depth, adapt_method):
+                print(x,y,z)
 
     elif action == 'xy2d':
         p = [0,0,0]

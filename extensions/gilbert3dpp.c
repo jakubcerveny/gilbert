@@ -1799,6 +1799,185 @@ int Gilbert3D_xyz2d(int cur_idx, int *q, int *p, int *alpha, int *beta, int *gam
   return Gilbert3DJ2_xyz2d(cur_idx, q, p, alpha, beta, gamma);
 }
 
+/***************************************
+ *           __          __  _         
+ *  ___ ____/ /__ ____  / /_(_)  _____ 
+ * / _ `/ _  / _ `/ _ \/ __/ / |/ / -_)
+ * \_,_/\_,_/\_,_/ .__/\__/_/|___/\__/ 
+ *              /_/                    
+ ***************************************/
+
+
+// Gilbert3D adaptive method
+//
+// adapt_method is:
+//
+//   HARMONY(0)     : choose endpoint based on harmonious cuboid subdivision
+//   HAMILTONIAN(1) : choose endpoint to make path notch-free
+//   AXIS(2)        : choose endpoint on alpha axis, axis order as specified 
+//
+// Return:
+//
+//   0 on success
+//
+// u will hold xyz coordinates of specified index
+//
+int Gilbert3DAdapt_d2xyz(int *u, int idx, int width, int height, int depth, int adapt_method) {
+  int w0, h0, d0, p0[3] = {0};
+
+  int alpha[3], beta[3], gamma[3];
+
+  w0 = (width%2);
+  h0 = (height%2);
+  d0 = (depth%2);
+
+  if (adapt_method == HARMONY) {
+
+    if ((width >= height) && (width >= depth)) {
+      alpha[0] = width; alpha[1] = 0;      alpha[2] = 0;
+       beta[0] = 0;      beta[1] = height;  beta[2] = 0;
+      gamma[0] = 0;     gamma[1] = 0;      gamma[2] = depth;
+    }
+    else if ((height >= width) && (height >= depth)) {
+      alpha[0] = 0;     alpha[1] = height; alpha[2] = 0;
+       beta[0] = width;  beta[1] = 0;       beta[2] = 0;
+      gamma[0] = 0;     gamma[1] = 0;      gamma[2] = depth;
+    }
+    else {
+      alpha[0] = 0;     alpha[1] = 0;      alpha[2] = depth;
+       beta[0] = width;  beta[1] = 0;       beta[2] = 0;
+      gamma[0] = 0;     gamma[1] = height; gamma[2] = 0;
+    }
+
+  }
+  
+  else if (adapt_method == HAMILTONIAN) {
+
+    if (w0 == 0) {
+      alpha[0] = width; alpha[1] = 0;      alpha[2] = 0;
+       beta[0] = 0;      beta[1] = height;  beta[2] = 0;
+      gamma[0] = 0;     gamma[1] = 0;      gamma[2] = depth;
+    }
+
+    else if (h0 == 0) {
+      alpha[0] = 0;     alpha[1] = height; alpha[2] = 0;
+       beta[0] = width;  beta[1] = 0;       beta[2] = 0;
+      gamma[0] = 0;     gamma[1] = 0;      gamma[2] = depth;
+    }
+
+    else if (d0 == 0) {
+      alpha[0] = 0;     alpha[1] = 0;      alpha[2] = depth;
+       beta[0] = width;  beta[1] = 0;       beta[2] = 0;
+      gamma[0] = 0;     gamma[1] = height; gamma[2] = 0;
+    }
+
+    else {
+      alpha[0] = width; alpha[1] = 0;      alpha[2] = 0;
+       beta[0] = 0;      beta[1] = height;  beta[2] = 0;
+      gamma[0] = 0;     gamma[1] = 0;      gamma[2] = depth;
+    }
+
+  }
+
+  else {
+
+    alpha[0] = width; alpha[1] = 0;      alpha[2] = 0;
+     beta[0] = 0;      beta[1] = height;  beta[2] = 0;
+    gamma[0] = 0;     gamma[1] = 0;      gamma[2] = depth;
+  }
+
+  return Gilbert3D_d2xyz(u, idx, 0, p0, alpha, beta, gamma);
+}
+
+
+// Gilbert3D adaptive method
+//
+// q is int[3] of coordinates to convert to Gilbert index.
+//
+// adapt_method is:
+//
+//   HARMONY(0)     : choose endpoint based on harmonious cuboid subdivision
+//   HAMILTONIAN(1) : choose endpoint to make path notch-free
+//   AXIS(2)        : choose endpoint on alpha axis, axis order as specified 
+//
+// Return:
+//
+//   non-negative index
+//
+int Gilbert3DAdapt_xyz2d(int *q, int width, int height, int depth, int adapt_method) {
+  int w0, h0, d0, p0[3] = {0};
+
+  int alpha[3], beta[3], gamma[3];
+
+  w0 = (width%2);
+  h0 = (height%2);
+  d0 = (depth%2);
+
+  if (adapt_method == HARMONY) {
+
+    if ((width >= height) && (width >= depth)) {
+      alpha[0] = width; alpha[1] = 0;      alpha[2] = 0;
+       beta[0] = 0;      beta[1] = height;  beta[2] = 0;
+      gamma[0] = 0;     gamma[1] = 0;      gamma[2] = depth;
+    }
+    else if ((height >= width) && (height >= depth)) {
+      alpha[0] = 0;     alpha[1] = height; alpha[2] = 0;
+       beta[0] = width;  beta[1] = 0;       beta[2] = 0;
+      gamma[0] = 0;     gamma[1] = 0;      gamma[2] = depth;
+    }
+    else {
+      alpha[0] = 0;     alpha[1] = 0;      alpha[2] = depth;
+       beta[0] = width;  beta[1] = 0;       beta[2] = 0;
+      gamma[0] = 0;     gamma[1] = height; gamma[2] = 0;
+    }
+
+  }
+  
+  else if (adapt_method == HAMILTONIAN) {
+
+    if (w0 == 0) {
+      alpha[0] = width; alpha[1] = 0;      alpha[2] = 0;
+       beta[0] = 0;      beta[1] = height;  beta[2] = 0;
+      gamma[0] = 0;     gamma[1] = 0;      gamma[2] = depth;
+    }
+
+    else if (h0 == 0) {
+      alpha[0] = 0;     alpha[1] = height; alpha[2] = 0;
+       beta[0] = width;  beta[1] = 0;       beta[2] = 0;
+      gamma[0] = 0;     gamma[1] = 0;      gamma[2] = depth;
+    }
+
+    else if (d0 == 0) {
+      alpha[0] = 0;     alpha[1] = 0;      alpha[2] = depth;
+       beta[0] = width;  beta[1] = 0;       beta[2] = 0;
+      gamma[0] = 0;     gamma[1] = height; gamma[2] = 0;
+    }
+
+    else {
+      alpha[0] = width; alpha[1] = 0;      alpha[2] = 0;
+       beta[0] = 0;      beta[1] = height;  beta[2] = 0;
+      gamma[0] = 0;     gamma[1] = 0;      gamma[2] = depth;
+    }
+
+  }
+
+  else {
+    alpha[0] = width; alpha[1] = 0;      alpha[2] = 0;
+     beta[0] = 0;      beta[1] = height;  beta[2] = 0;
+    gamma[0] = 0;     gamma[1] = 0;      gamma[2] = depth;
+  }
+
+  return Gilbert3D_xyz2d(0, q, p0, alpha, beta, gamma);
+}
+
+/***************************************
+ *           __          __  _         
+ *  ___ ____/ /__ ____  / /_(_)  _____ 
+ * / _ `/ _  / _ `/ _ \/ __/ / |/ / -_)
+ * \_,_/\_,_/\_,_/ .__/\__/_/|___/\__/ 
+ *              /_/                    
+ ***************************************/
+
 
 
 /***************************************************
