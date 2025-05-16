@@ -202,12 +202,12 @@ int Hilbert2x2x2_d2xyz(int *u, int dst_idx, int cur_idx, int *p, int *alpha, int
       v_add(u, p, d_gamma);
       break;
     case 4:
-      v_add(tv, alpha, d_gamma);
+      v_add(tv, d_alpha, d_gamma);
       v_add(u, p, tv);
       break;
     case 5:
-      v_add(tv, beta, d_gamma);
-      v_add(tv, tv, alpha);
+      v_add(tv, d_beta, d_gamma);
+      v_add(tv, tv, d_alpha);
       v_add(u, p, tv);
       break;
     case 6:
@@ -1271,7 +1271,7 @@ int Gilbert3DJ1_d2xyz(int *u, int dst_idx, int cur_idx, int *p, int *alpha, int 
   nxt_idx = cur_idx + (a*(b-b2)*g2);
   if ((cur_idx <= dst_idx) && (dst_idx < nxt_idx)) {
 
-    v_sub(t_p, gamma, d_gamma);
+    v_sub(t_p, gamma2, d_gamma);
     v_add(t_p, t_p, beta);
     v_sub(t_p, t_p, d_beta);
     v_add(t_p, t_p, p);
@@ -1415,7 +1415,7 @@ int Gilbert3DJ1_xyz2d(int cur_idx, int *q, int *p, int *alpha, int *beta, int *g
   v_add(t_p, t_p, p);
 
   v_neg(t_alpha, beta);
-  v_sub(t_beta, gamma2, gamma);
+  v_sub(t_beta, gamma, gamma2);
   v_sub(t_gamma, alpha2, alpha);
 
   if (inBounds(q, t_p, t_alpha, t_beta, t_gamma)) {
@@ -1548,9 +1548,9 @@ int Gilbert3DJ2_d2xyz(int *u, int dst_idx, int cur_idx, int *p, int *alpha, int 
   v_sub(t_p, t_p, d_gamma);
   v_add(t_p, t_p, p);
 
-  v_neg(t_p, gamma2);
+  v_neg(t_alpha, gamma2);
 
-  v_sub(t_p, alpha2, alpha);
+  v_sub(t_beta, alpha2, alpha);
 
   return Gilbert3D_d2xyz( u, dst_idx, cur_idx,
                           t_p,
@@ -1632,7 +1632,7 @@ int Gilbert3DJ2_xyz2d(int cur_idx, int *q, int *p, int *alpha, int *beta, int *g
   v_add(t_p, t_p, p);
 
   v_sub(t_beta, beta, beta2);
-  v_add(t_gamma, gamma, gamma2);
+  v_sub(t_gamma, gamma, gamma2);
   if (inBounds(q, t_p, alpha, t_beta, t_gamma)) {
     return Gilbert3D_xyz2d( cur_idx, q,
                             t_p,
@@ -1833,6 +1833,8 @@ int main(int argc, char **argv) {
 
   char buf[1024];
 
+  int r;
+
   w = 1;
   h = 1;
   d = 1;
@@ -1863,22 +1865,17 @@ int main(int argc, char **argv) {
     exit(-1);
   }
 
+  p[0] = 0;
+  p[1] = 0;
+  p[2] = 0;
+
   if (strncmp("xy2d", buf, 1023) == 0) {
 
-    p[0] = 0;
-    p[2] = 0;
-    p[2] = 0;
+    alpha[0] = w; alpha[1] = 0; alpha[2] = 0;
+     beta[0] = 0;  beta[1] = h;  beta[2] = 0;
 
-    alpha[0] = w;
-    alpha[1] = 0;
-    alpha[2] = 0;
-
-    beta[0] = 0;
-    beta[1] = h;
-    beta[2] = 0;
-
-    for (x = 0; x < w; x++) {
-      for (y = 0; y < h; y++) {
+    for (y = 0; y < h; y++) {
+      for (x = 0; x < w; x++) {
         xyz[0] = x;
         xyz[1] = y;
         xyz[2] = 0;
@@ -1890,17 +1887,8 @@ int main(int argc, char **argv) {
   }
   else if (strncmp("d2xy", buf, 1023) == 0) {
 
-    p[0] = 0;
-    p[2] = 0;
-    p[2] = 0;
-
-    alpha[0] = w;
-    alpha[1] = 0;
-    alpha[2] = 0;
-
-    beta[0] = 0;
-    beta[1] = h;
-    beta[2] = 0;
+    alpha[0] = w; alpha[1] = 0; alpha[2] = 0;
+     beta[0] = 0;  beta[1] = h;  beta[2] = 0;
 
     for (idx = 0; idx < (w*h); idx++) {
       Gilbert2D_d2xyz( xyz, idx, 0, p, alpha, beta );
@@ -1910,11 +1898,20 @@ int main(int argc, char **argv) {
   }
   else if (strncmp("xyz2d", buf, 1023) == 0) {
 
-    for (x = 0; x < w; x++) {
+    alpha[0] = w; alpha[1] = 0; alpha[2] = 0;
+     beta[0] = 0;  beta[1] = h;  beta[2] = 0;
+    gamma[0] = 0; gamma[1] = 0; gamma[2] = d;
+
+    for (z = 0; z < d; z++) {
       for (y = 0; y < h; y++) {
-        for (z = 0; z < d; z++) {
-          //idx = Gilbert_xyz2d( x,y,z, w,h,d );
-          //printf("%i %i %i %i\n", idx, x, y, z);
+        for (x = 0; x < w; x++) {
+
+          xyz[0] = x;
+          xyz[1] = y;
+          xyz[2] = z;
+
+          idx = Gilbert3D_xyz2d( 0, xyz, p, alpha, beta, gamma );
+          printf("%i %i %i %i\n", idx, x, y, z);
         }
       }
     }
@@ -1923,11 +1920,16 @@ int main(int argc, char **argv) {
 
   else if (strncmp("d2xyz", buf, 1023) == 0) {
 
-
+    alpha[0] = w; alpha[1] = 0; alpha[2] = 0;
+     beta[0] = 0;  beta[1] = h;  beta[2] = 0;
+    gamma[0] = 0; gamma[1] = 0; gamma[2] = d;
 
     for (idx = 0; idx < (w*h*d); idx++) {
-      //Gilbert_d2xyz( xyz, idx, 0, p, alpha, beta )
-      //printf("%i %i %i\n", x, y, z);
+      r = Gilbert3D_d2xyz( xyz, idx, 0, p, alpha, beta, gamma );
+
+      if (r<0) { printf("### r:%i\n", r); }
+
+      printf("%i %i %i\n", xyz[0], xyz[1], xyz[2]);
     }
 
   }
