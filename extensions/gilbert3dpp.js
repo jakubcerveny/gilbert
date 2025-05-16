@@ -765,15 +765,9 @@ function Hilbert2x2x2_xyz2d(idx, q, p, alpha, beta, gamma) {
 
   let lu = [ 0, 7,  1, 6,  3, 4,  2, 5 ];
 
-  let dxyz = [
-    q[0] - p[0],
-    q[1] - p[1],
-    q[2] - p[2]
-  ];
-
   let m_qp = _add(q, _neg(p));
 
-  dxyz = [
+  let dxyz = [
     _dot(d_alpha, m_qp),
     _dot(d_beta, m_qp),
     _dot(d_gamma, m_qp)
@@ -1571,7 +1565,7 @@ function Gilbert3DJ2_xyz2d(cur_idx, q, p, alpha, beta, gamma) {
   _dprint("#J2.A_xyz2d");
 
   let u = _clone(p);
-  if (_inBounds(q, p, beta2, gamma, alpha2)) {
+  if (_inBounds(q, u, beta2, gamma, alpha2)) {
     return Gilbert3D_xyz2d( cur_idx, q,
                             u,
                             beta2, gamma, alpha2 );

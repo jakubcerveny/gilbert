@@ -70,6 +70,58 @@ if [[ $C_TESTS ]] ; then
   fi
   echo pass
 
+  ##
+  ##
+  if [[ "$VERBOSE_LEVEL" -gt 0 ]] ; then
+    echo -n "# C: gilbert2d xy2d (sync): "
+    if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+      echo ""
+    fi
+  fi
+
+
+  for y in `seq 1 $N` ; do
+    for x in `seq 1 $N` ; do
+
+      if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+        echo "## $x $y"
+      fi
+
+      a0=`echo "$x%2" | bc`
+      if [[ "$a0" = 1 ]] && ( [[ "$y" = 2 ]] || [[ "$z" == 1 ]] ) ; then
+        if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+          echo "# skipping (known bad configuration: $x $y $z)"
+        fi
+        continue
+      fi
+      if [[ "$a0" = 1 ]] && ( [[ "$y" = 1 ]] || [[ "$z" == 2 ]] ) ; then
+        if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+          echo "# skipping (known bad configuration: $x $y $z)"
+        fi
+        continue
+      fi
+
+      ./gilbert3dpp-c xy2d $x $y | \
+        grep -v '#' | \
+        sort -n | cut -f2- -d' ' | \
+        ./gilbert-check-curve $CHECK_OPT
+
+      if [[ "$?" != 0 ]] ; then
+        ERR=1
+        break
+      fi
+
+
+    done
+    if [[ "$ERR" != 0 ]] ; then break ; fi
+  done
+
+  if [[ "$ERR" != 0 ]] ; then
+    echo FAIL
+    exit -1
+  fi
+  echo pass
+
 
 
 fi
