@@ -2012,6 +2012,7 @@ int main(int argc, char **argv) {
 
   char buf[1024];
 
+  int adapt_method = HARMONY;
   int r;
 
   w = 1;
@@ -2041,8 +2042,25 @@ int main(int argc, char **argv) {
   }
 
   if ((w <= 0) || (h <= 0) || (d <= 0)) {
+    fprintf(stderr, "width, height, depth must all be greater than 0\n");
     exit(-1);
   }
+
+  if      (strncmp("d2xyz.0", buf, 1023) == 0) { adapt_method = HARMONY; }
+  else if (strncmp("d2xyz.1", buf, 1023) == 0) { adapt_method = HAMILTONIAN; }
+  else if (strncmp("d2xyz.2", buf, 1023) == 0) { adapt_method = AXIS; }
+
+  else if (strncmp("xyz2d.0", buf, 1023) == 0) { adapt_method = HARMONY; }
+  else if (strncmp("xyz2d.1", buf, 1023) == 0) { adapt_method = HAMILTONIAN; }
+  else if (strncmp("xyz2d.2", buf, 1023) == 0) { adapt_method = AXIS; }
+
+  else if (strncmp("d2xy.0", buf, 1023) == 0) { adapt_method = HARMONY; }
+  else if (strncmp("d2xy.1", buf, 1023) == 0) { adapt_method = HAMILTONIAN; }
+  else if (strncmp("d2xy.2", buf, 1023) == 0) { adapt_method = AXIS; }
+
+  else if (strncmp("xy2d.0", buf, 1023) == 0) { adapt_method = HARMONY; }
+  else if (strncmp("xy2d.1", buf, 1023) == 0) { adapt_method = HAMILTONIAN; }
+  else if (strncmp("xy2d.2", buf, 1023) == 0) { adapt_method = AXIS; }
 
   p[0] = 0;
   p[1] = 0;
@@ -2097,6 +2115,25 @@ int main(int argc, char **argv) {
 
   }
 
+  else if ((strncmp("xyz2d.0", buf, 1023) == 0) ||
+           (strncmp("xyz2d.1", buf, 1023) == 0) ||
+           (strncmp("xyz2d.2", buf, 1023) == 0)) {
+
+    for (z = 0; z < d; z++) {
+      for (y = 0; y < h; y++) {
+        for (x = 0; x < w; x++) {
+          xyz[0] = x;
+          xyz[1] = y;
+          xyz[2] = z;
+          idx = Gilbert3DAdapt_xyz2d( xyz, w, h, d, adapt_method );
+          printf("%i %i %i %i\n", idx, x, y, z);
+        }
+      }
+    }
+
+  }
+
+
   else if (strncmp("d2xyz", buf, 1023) == 0) {
 
     alpha[0] = w; alpha[1] = 0; alpha[2] = 0;
@@ -2105,9 +2142,17 @@ int main(int argc, char **argv) {
 
     for (idx = 0; idx < (w*h*d); idx++) {
       r = Gilbert3D_d2xyz( xyz, idx, 0, p, alpha, beta, gamma );
+      printf("%i %i %i\n", xyz[0], xyz[1], xyz[2]);
+    }
 
-      if (r<0) { printf("### r:%i\n", r); }
+  }
 
+  else if ((strncmp("d2xyz.0", buf, 1023) == 0) ||
+           (strncmp("d2xyz.1", buf, 1023) == 0) ||
+           (strncmp("d2xyz.2", buf, 1023) == 0)) {
+
+    for (idx = 0; idx < (w*h*d); idx++) {
+      r = Gilbert3DAdapt_d2xyz( xyz, idx, w, h, d, adapt_method );
       printf("%i %i %i\n", xyz[0], xyz[1], xyz[2]);
     }
 

@@ -74,6 +74,23 @@ gilbert3dpp_cmp_js_py_c () {
   gilbert3dpp_cmp "$bin_base" "$bin_cmp" $x $y $z
 }
 
+gilbert3dpp_cmp_adapt () {
+  local x=$1
+  local y=$2
+  local z=$3
+
+  for adaptMethod in `seq 0 3` ; do
+
+    bin_base="node ./gilbert3dpp.js d2xyz.0"
+
+    bin_cmp="./gilbert3dpp-c d2xyz"
+    gilbert3dpp_cmp "$bin_base" "$bin_cmp" $x $y $z
+
+    bin_cmp="./gilbert3dpp.py -a xyz"
+    gilbert3dpp_cmp "$bin_base" "$bin_cmp" $x $y $z
+  done
+}
+
 if [[ $COMPARE_TESTS ]] ; then
 
   x=10 ; y=2
@@ -90,6 +107,10 @@ if [[ $COMPARE_TESTS ]] ; then
 
   x=41 ; y=31 ; z=21
   gilbert3dpp_cmp_js_py_c $x $y $z
+
+fi
+
+if [[ $ADAPTIVE_TEST ]] ; then
 
 fi
 

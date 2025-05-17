@@ -1666,7 +1666,7 @@ def Gilbert3DAdapt(width, height, depth, adapt_method):
 
     elif adapt_method == ADAPT_METHOD["HAMILTONIAN"]:
 
-        w0,h0,d0 = width%2, height%2, depth%2
+        w0,h0,g0 = width%2, height%2, depth%2
 
         if w0 == 0:
             alpha = [width, 0, 0]
