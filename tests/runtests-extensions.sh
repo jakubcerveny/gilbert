@@ -1,6 +1,14 @@
 #!/bin/bash
 #
 
+pushd ../extensions
+make
+popd
+
+ln -f -s ../extensions/gilbert3dpp.js .
+ln -f -s ../extensions/gilbert3dpp.py .
+ln -f -s ../extensions/gilbert3dpp-c .
+
 N=13
 
 COMPARE_TESTS=1
