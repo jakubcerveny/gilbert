@@ -3,6 +3,8 @@
 
 N=13
 
+COMPARE_TESTS=1
+
 C_TESTS=1
 PYTHON_TESTS=1
 JAVASCRIPT_TESTS=1
@@ -14,6 +16,82 @@ if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
   CHECK_OPT='verbose'
 fi
 
+gilbert2dpp_cmp () {
+  local bin_a=$1
+  local bin_b=$2
+  local x=$3
+  local y=$4
+
+  echo -n "#($bin_a) ($bin_b) (w:$x,h:$y):"
+  diff \
+    <( $bin_a $x $y ) \
+    <( $bin_b $x $y )
+  if [[ $? != 0 ]] ; then echo "FAIL" ; else echo "pass" ; fi
+
+}
+
+gilbert3dpp_cmp () {
+  local bin_a=$1
+  local bin_b=$2
+  local x=$3
+  local y=$4
+  local z=$5
+
+  echo -n "#($bin_a) ($bin_b) (w:$x,h:$y,d:$z):"
+  diff \
+    <( $bin_a $x $y $z ) \
+    <( $bin_b $x $y $z )
+  if [[ $? != 0 ]] ; then echo "FAIL" ; else echo "pass" ; fi
+
+}
+
+
+
+gilbert2dpp_cmp_js_py_c () {
+  local x=$1
+  local y=$2
+
+  bin_base="node ./gilbert3dpp.js xy"
+  bin_cmp="./gilbert3dpp-c d2xy"
+
+  gilbert2dpp_cmp "$bin_base" "$bin_cmp" $x $y
+
+  bin_cmp="./gilbert3dpp.py -a xy"
+  gilbert2dpp_cmp "$bin_base" "$bin_cmp" $x $y
+}
+
+gilbert3dpp_cmp_js_py_c () {
+  local x=$1
+  local y=$2
+  local z=$3
+
+  bin_base="node ./gilbert3dpp.js xyz"
+
+  bin_cmp="./gilbert3dpp-c d2xyz"
+  gilbert3dpp_cmp "$bin_base" "$bin_cmp" $x $y $z
+
+  bin_cmp="./gilbert3dpp.py -a xyz"
+  gilbert3dpp_cmp "$bin_base" "$bin_cmp" $x $y $z
+}
+
+if [[ $COMPARE_TESTS ]] ; then
+
+  x=10 ; y=2
+  gilbert2dpp_cmp_js_py_c $x $y
+
+  x=40 ; y=30 ; z=20
+  gilbert3dpp_cmp_js_py_c $x $y $z
+
+  x=41 ; y=30 ; z=20
+  gilbert3dpp_cmp_js_py_c $x $y $z
+
+  x=41 ; y=31 ; z=20
+  gilbert3dpp_cmp_js_py_c $x $y $z
+
+  x=41 ; y=31 ; z=21
+  gilbert3dpp_cmp_js_py_c $x $y $z
+
+fi
 
 
 if [[ $C_TESTS ]] ; then
@@ -439,7 +517,7 @@ if [[ $PYTHON_TESTS ]] ; then
           continue
         fi
 
-        ./gilbert3dpp.py -a xyz $x $y -D $z | \
+        ./gilbert3dpp.py -a xyz $x $y $z | \
           grep -v '#' | \
           ./gilbert-check-curve $CHECK_OPT
 
@@ -495,7 +573,7 @@ if [[ $PYTHON_TESTS ]] ; then
           continue
         fi
 
-        ./gilbert3dpp.py -a d2xyz $x $y -D $z | \
+        ./gilbert3dpp.py -a d2xyz $x $y $z | \
           grep -v '#' | \
           ./gilbert-check-curve $CHECK_OPT
 
@@ -550,7 +628,7 @@ if [[ $PYTHON_TESTS ]] ; then
           continue
         fi
 
-        ./gilbert3dpp.py -a xyz2d $x $y -D $z | \
+        ./gilbert3dpp.py -a xyz2d $x $y $z | \
           grep -v '#' | \
           sort -n | cut -f2- -d' ' | \
           ./gilbert-check-curve $CHECK_OPT
@@ -559,7 +637,6 @@ if [[ $PYTHON_TESTS ]] ; then
           ERR=1
           break
         fi
-
 
       done
       if [[ "$ERR" != 0 ]] ; then break ; fi
@@ -573,11 +650,7 @@ if [[ $PYTHON_TESTS ]] ; then
   fi
   echo pass
 
-
-
-
 fi
-
 
 ####
 ####

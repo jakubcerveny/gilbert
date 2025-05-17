@@ -1789,7 +1789,7 @@ if __name__ == "__main__":
     parser.add_argument('-a', '--action', type=str)
     parser.add_argument('width', type=int)
     parser.add_argument('height', type=int)
-    parser.add_argument('-D', '--depth', type=int)
+    parser.add_argument('depth', type=int, nargs='?', default=1)
     args = parser.parse_args()
 
     if args.action is not None:
