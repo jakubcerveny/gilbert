@@ -4,11 +4,13 @@
 N=13
 
 COMPARE_TESTS=1
+ADAPTIVE_TESTS=1
 
 C_TESTS=1
 PYTHON_TESTS=1
 JAVASCRIPT_TESTS=1
 VERBOSE_LEVEL=1
+
 ERR=0
 
 CHECK_OPT=""
@@ -22,11 +24,11 @@ gilbert2dpp_cmp () {
   local x=$3
   local y=$4
 
-  echo -n "#($bin_a) ($bin_b) (w:$x,h:$y):"
+  echo -n "# ~:($bin_a) ($bin_b) (w:$x,h:$y):"
   diff \
     <( $bin_a $x $y ) \
     <( $bin_b $x $y )
-  if [[ $? != 0 ]] ; then echo "FAIL" ; else echo "pass" ; fi
+  if [[ $? != 0 ]] ; then echo "FAIL" ; exit -1 ; else echo "pass" ; fi
 
 }
 
@@ -37,14 +39,13 @@ gilbert3dpp_cmp () {
   local y=$4
   local z=$5
 
-  echo -n "#($bin_a) ($bin_b) (w:$x,h:$y,d:$z):"
+  echo -n "# ~:($bin_a) ($bin_b) (w:$x,h:$y,d:$z):"
   diff \
     <( $bin_a $x $y $z ) \
     <( $bin_b $x $y $z )
-  if [[ $? != 0 ]] ; then echo "FAIL" ; else echo "pass" ; fi
+  if [[ $? != 0 ]] ; then echo "FAIL" ; exit -1 ; else echo "pass" ; fi
 
 }
-
 
 
 gilbert2dpp_cmp_js_py_c () {
@@ -79,19 +80,23 @@ gilbert3dpp_cmp_adapt () {
   local y=$2
   local z=$3
 
-  for adaptMethod in `seq 0 3` ; do
+  for adaptMethod in `seq 0 2` ; do
 
-    bin_base="node ./gilbert3dpp.js d2xyz.0"
+    bin_base="node ./gilbert3dpp.js d2xyza.$adaptMethod"
 
-    bin_cmp="./gilbert3dpp-c d2xyz"
+    bin_cmp="./gilbert3dpp-c d2xyz.$adaptMethod"
     gilbert3dpp_cmp "$bin_base" "$bin_cmp" $x $y $z
 
-    bin_cmp="./gilbert3dpp.py -a xyz"
+    bin_cmp="./gilbert3dpp.py -a xyz.$adaptMethod"
     gilbert3dpp_cmp "$bin_base" "$bin_cmp" $x $y $z
   done
 }
 
 if [[ $COMPARE_TESTS ]] ; then
+
+  if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+    echo "# comparison tests"
+  fi
 
   x=10 ; y=2
   gilbert2dpp_cmp_js_py_c $x $y
@@ -110,7 +115,14 @@ if [[ $COMPARE_TESTS ]] ; then
 
 fi
 
-if [[ $ADAPTIVE_TEST ]] ; then
+if [[ $ADAPTIVE_TESTS ]] ; then
+
+  if [[ "$VERBOSE_LEVEL" -gt 1 ]] ; then
+    echo "# adaptive tests"
+  fi
+
+  x=3 ; y=5 ; z=4
+  gilbert3dpp_cmp_adapt $x $y $z
 
 fi
 
