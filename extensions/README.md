@@ -50,4 +50,14 @@ There are three methods:
 | Axis | 2 | Uses axis order specified (default for other, non-adaptive, functions above) |
 
 
+Tests
+---
+
+Tests can be run in the `tests/` directory.
+From here:
+
+```
+$ cd ../tests/
+$ ./runtests-extensions.sh
+```
 
